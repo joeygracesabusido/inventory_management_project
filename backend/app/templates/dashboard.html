@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Inventory Management</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100">
+    <div class="flex h-screen">
+        <!-- Sidebar -->
+        <aside class="w-64 bg-white border-r border-gray-200 flex flex-col">
+            <div class="h-16 flex items-center justify-center border-b border-gray-200">
+                <h1 class="text-xl font-bold text-indigo-600">INVENTORY</h1>
+            </div>
+            <nav class="flex-1 px-2 py-4 space-y-1">
+                <a href="/dashboard" class="flex items-center px-2 py-2 text-sm font-medium text-gray-700 rounded-md bg-gray-100">Dashboard</a>
+                <a href="#" class="flex items-center px-2 py-2 text-sm font-medium text-gray-700 rounded-md hover:bg-gray-100">Items</a>
+                <a href="#" class="flex items-center px-2 py-2 text-sm font-medium text-gray-700 rounded-md hover:bg-gray-100">Suppliers</a>
+                <a href="#" class="flex items-center px-2 py-2 text-sm font-medium text-gray-700 rounded-md hover:bg-gray-100">Stock Movements</a>
+                <a href="#" class="flex items-center px-2 py-2 text-sm font-medium text-gray-700 rounded-md hover:bg-gray-100">Reports</a>
+            </nav>
+            <div class="px-2 py-4 border-t border-gray-200">
+                <a href="#" id="logout-btn" class="flex items-center px-2 py-2 text-sm font-medium text-gray-700 rounded-md hover:bg-gray-100">Logout</a>
+            </div>
+        </aside>
+
+        <!-- Main content -->
+        <main class="flex-1 flex flex-col">
+            <header class="flex items-center justify-between h-16 px-6 bg-white border-b border-gray-200">
+                <h2 class="text-2xl font-semibold text-gray-900">Dashboard</h2>
+                <div>
+                    <button class="px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-md hover:bg-indigo-700">+ Add New Item</button>
+                </div>
+            </header>
+            <div class="flex-1 p-6 overflow-y-auto">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <!-- Inventory Summary -->
+                    <div class="bg-white p-6 rounded-lg shadow">
+                        <h3 class="text-lg font-medium text-gray-900">Inventory Summary</h3>
+                        <div class="mt-4 grid grid-cols-2 gap-4">
+                            <div>
+                                <p class="text-sm text-gray-500">Total Items</p>
+                                <p class="text-2xl font-bold">1,250</p>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-500">Low Stock</p>
+                                <p class="text-2xl font-bold text-red-500">12</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Recent Sales -->
+                    <div class="bg-white p-6 rounded-lg shadow col-span-1 md:col-span-2">
+                        <h3 class="text-lg font-medium text-gray-900">Recent Sales</h3>
+                        <ul class="mt-4 space-y-2">
+                            <li class="flex justify-between items-center">
+                                <span>INV-00123</span>
+                                <span>$1,250.00</span>
+                                <span class="px-2 py-1 text-xs font-medium text-green-800 bg-green-100 rounded-full">Completed</span>
+                            </li>
+                            <li class="flex justify-between items-center">
+                                <span>INV-00122</span>
+                                <span>$850.00</span>
+                                <span class="px-2 py-1 text-xs font-medium text-yellow-800 bg-yellow-100 rounded-full">Pending</span>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- Purchase Orders -->
+                    <div class="bg-white p-6 rounded-lg shadow">
+                        <h3 class="text-lg font-medium text-gray-900">Purchase Orders</h3>
+                        <p class="mt-4 text-sm text-gray-500">You have 3 pending purchase orders.</p>
+                        <button class="mt-4 px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-md hover:bg-indigo-700">View Orders</button>
+                    </div>
+
+                    <!-- Sales Trend -->
+                    <div class="bg-white p-6 rounded-lg shadow col-span-1 md:col-span-3 lg:col-span-4">
+                        <h3 class="text-lg font-medium text-gray-900">Sales Trend</h3>
+                        <div class="mt-4 h-64 bg-gray-200 rounded-lg flex items-center justify-center">
+                            <p class="text-gray-500">Chart will be displayed here</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+</html>

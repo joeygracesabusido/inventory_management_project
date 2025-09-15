@@ -1,4 +1,3 @@
-
 document.addEventListener('DOMContentLoaded', () => {
     initializeApp();
 });
@@ -24,11 +23,26 @@ function setupEventListeners() {
     // Login form submission
     getEl('login-form').addEventListener('submit', handleLogin);
 
+    // Signup form submission
+    getEl('signup-form').addEventListener('submit', handleSignUp);
+
     // Logout button
     getEl('logout-btn').addEventListener('click', handleLogout);
 
+    // Switch to sign up view
+    getEl('signup-link').addEventListener('click', (e) => {
+        e.preventDefault();
+        toggleViews('signup-view');
+    });
+
+    // Switch to login view
+    getEl('login-link').addEventListener('click', (e) => {
+        e.preventDefault();
+        toggleViews('login-view');
+    });
+
     // Sidebar navigation
-    document.querySelector('.sidebar nav').addEventListener('click', (e) => {
+    document.querySelector('aside nav').addEventListener('click', (e) => {
         if (e.target.tagName === 'A') {
             e.preventDefault();
             const viewName = e.target.dataset.view;
@@ -59,13 +73,57 @@ async function handleLogin(e) {
 
         if (token) {
             localStorage.setItem('accessToken', token);
-            toggleViews('main-view');
-            navigateTo('dashboard');
+            window.location.href = '/dashboard';
         } else {
             loginErrorEl.textContent = 'Login failed: No token received.';
         }
     } catch (error) {
         loginErrorEl.textContent = error.message || 'An error occurred during login.';
+    }
+}
+
+async function handleSignUp(e) {
+    e.preventDefault();
+    console.log("handleSignUp called");
+    const email = getEl('signup-email').value;
+    const password = getEl('signup-password').value;
+    const firstName = getEl('first-name').value;
+    const lastName = getEl('last-name').value;
+
+    console.log("Email:", email);
+    console.log("Password:", password);
+    console.log("First Name:", firstName);
+    console.log("Last Name:", lastName);
+
+    // You can add a signup-error element to the HTML to show errors
+    // const signupErrorEl = getEl('signup-error');
+    // signupErrorEl.textContent = '';
+
+    const SIGNUP_MUTATION = `
+        mutation SignUp($email: String!, $password: String!, $firstName: String!, $lastName: String!) {
+            signUp(email: $email, password: $password, firstName: $firstName, lastName: $lastName) {
+                id
+                email
+            }
+        }
+    `;
+
+    try {
+        console.log("Calling fetchGraphQL for signup");
+        const data = await fetchGraphQL(SIGNUP_MUTATION, { email, password, firstName, lastName });
+        console.log("GraphQL response:", data);
+
+        if (data.signUp) {
+            // Maybe show a success message and switch to login view
+            console.log('Sign up successful:', data.signUp);
+            toggleViews('login-view');
+        } else {
+            // signupErrorEl.textContent = 'Sign up failed.';
+            console.error('Sign up failed');
+        }
+    } catch (error) {
+        // signupErrorEl.textContent = error.message || 'An error occurred during sign up.';
+        console.error("Error in handleSignUp:", error);
     }
 }
 
@@ -79,7 +137,7 @@ function handleLogout() {
 function navigateTo(viewName) {
     console.log(`Navigating to ${viewName}`);
     // Update active link in sidebar
-    document.querySelectorAll('.sidebar nav a').forEach(a => {
+    document.querySelectorAll('aside nav a').forEach(a => {
         a.classList.remove('active');
         if (a.dataset.view === viewName) {
             a.classList.add('active');

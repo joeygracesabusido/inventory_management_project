@@ -2,7 +2,7 @@ import strawberry
 
 @strawberry.type
 class UserType:
-    id: int
+    id: str
     email: str
     first_name: str
     last_name: str

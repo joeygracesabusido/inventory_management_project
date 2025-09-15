@@ -6,3 +6,7 @@ python-dotenv
 python-jose[cryptography]
 passlib[bcrypt]
 faker
+jinja2
+python-multipart
+aiofiles
+motor
