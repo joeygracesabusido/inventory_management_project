@@ -1,0 +1,108 @@
+{% extends "dashboard.html" %}
+
+{% block title %}Products - Inventory Management{% endblock %}
+
+{% block content %}
+<div class="flex items-center justify-between mb-6">
+    <h2 class="text-2xl font-semibold text-gray-900">Products and services</h2>
+    <div class="flex items-center space-x-2">
+        <button class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50">Import</button>
+        <button class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50">Export</button>
+        <a href="/new_item" class="px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-md hover:bg-green-700">New item</a>
+    </div>
+</div>
+
+<div class="bg-white shadow rounded-lg p-6">
+    <div class="flex items-center justify-between mb-4">
+        <div class="flex items-center space-x-4">
+            <div class="relative">
+                <input type="text" placeholder="Search" class="pl-10 pr-4 py-2 border border-gray-300 rounded-md w-64">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <svg class="h-5 w-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
+                    </svg>
+                </div>
+            </div>
+            <button class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50">Filter</button>
+            <button class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50">Columns</button>
+        </div>
+    </div>
+
+    <table class="min-w-full divide-y divide-gray-200">
+        <thead class="bg-gray-50">
+            <tr>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <input type="checkbox" class="h-4 w-4 text-indigo-600 border-gray-300 rounded">
+                </th>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Code</th>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cost price</th>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Sale price</th>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Quantity</th>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Unit</th>
+                <th scope="col" class="relative px-6 py-3">
+                    <span class="sr-only">Edit</span>
+                </th>
+            </tr>
+        </thead>
+        <tbody class="bg-white divide-y divide-gray-200">
+            <tr>
+                <td class="px-6 py-4 whitespace-nowrap">
+                    <input type="checkbox" class="h-4 w-4 text-indigo-600 border-gray-300 rounded">
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">BOOK</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">Fish out of Water: Finding Your Brand</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"></td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">19.95</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">10</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">pcs</td>
+                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                    <a href="#" class="text-indigo-600 hover:text-indigo-900">...</a>
+                </td>
+            </tr>
+            <tr>
+                <td class="px-6 py-4 whitespace-nowrap">
+                    <input type="checkbox" class="h-4 w-4 text-indigo-600 border-gray-300 rounded">
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">DevD</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">Development work - developer onsite per day</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"></td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">850.00</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">1</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">day</td>
+                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                    <a href="#" class="text-indigo-600 hover:text-indigo-900">...</a>
+                </td>
+            </tr>
+            <tr>
+                <td class="px-6 py-4 whitespace-nowrap">
+                    <input type="checkbox" class="h-4 w-4 text-indigo-600 border-gray-300 rounded">
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">DevH</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">Development work - per hour rate</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"></td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">90.00</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">8</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">hour</td>
+                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                    <a href="#" class="text-indigo-600 hover:text-indigo-900">...</a>
+                </td>
+            </tr>
+            <tr>
+                <td class="px-6 py-4 whitespace-nowrap">
+                    <input type="checkbox" class="h-4 w-4 text-indigo-600 border-gray-300 rounded">
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">GB1-White</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">Golf balls - white single</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">4.20</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">5.60</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">100</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">pcs</td>
+                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                    <a href="#" class="text-indigo-600 hover:text-indigo-900">...</a>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+{% endblock %}   

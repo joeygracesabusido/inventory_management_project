@@ -4,56 +4,9 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from strawberry.fastapi import GraphQLRouter
 from fastapi.middleware.cors import CORSMiddleware
-from typing import List
 
-from app.models.user import User
-from app.schemas.user import UserType, AuthTokenResponse
-from app.security.password import get_password_hash, verify_password
-from app.security.token import create_access_token
-from app.crud.user import get_user_by_email, create_user
-
-# --- GraphQL Schemas ---
-
-@strawberry.type
-class Query:
-    @strawberry.field
-    def hello(self) -> str:
-        return "Hello, world!"
-
-@strawberry.type
-class Mutation:
-    @strawberry.mutation
-    async def login(self, email: str, password: str) -> AuthTokenResponse:
-        user = await get_user_by_email(email)
-        if not user or not verify_password(password, user['hashed_password']):
-            raise Exception("Invalid credentials")
-
-        access_token = create_access_token(data={"sub": user['email']})
-        return AuthTokenResponse(access_token=access_token, token_type="bearer")
-
-    @strawberry.mutation
-    async def signUp(self, email: str, password: str, first_name: str, last_name: str) -> UserType:
-        # Check if user already exists
-        user = await get_user_by_email(email)
-        if user:
-            raise Exception("User with this email already exists")
-
-        # Create new user
-        hashed_password = get_password_hash(password)
-        new_user_data = {
-            "email": email,
-            "hashed_password": hashed_password,
-            "first_name": first_name,
-            "last_name": last_name
-        }
-        new_user = await create_user(new_user_data)
-
-        return UserType(
-            id=new_user["id"],
-            email=new_user["email"],
-            first_name=new_user["first_name"],
-            last_name=new_user["last_name"]
-        )
+from app.views.mutations import Mutation
+from app.views.queries import Query
 
 schema = strawberry.Schema(query=Query, mutation=Mutation)
 
@@ -86,6 +39,18 @@ app.include_router(graphql_app, prefix="/graphql")
 @app.get("/dashboard")
 async def dashboard(request: Request):
     return templates.TemplateResponse("dashboard.html", {"request": request})
+
+@app.get("/add_contact")
+async def add_contact(request: Request):
+    return templates.TemplateResponse("add_contact.html", {"request": request})
+
+@app.get("/products")
+async def products(request: Request):
+    return templates.TemplateResponse("products.html", {"request": request})
+
+@app.get("/new_item")
+async def new_item(request: Request):
+    return templates.TemplateResponse("new_item.html", {"request": request})
 
 @app.get("/")
 async def root(request: Request):

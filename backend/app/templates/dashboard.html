@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard - Inventory Management</title>
+    <title>{% block title %}Dashboard - Inventory Management{% endblock %}</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-100">
@@ -15,8 +15,8 @@
             </div>
             <nav class="flex-1 px-2 py-4 space-y-1">
                 <a href="/dashboard" class="flex items-center px-2 py-2 text-sm font-medium text-gray-700 rounded-md bg-gray-100">Dashboard</a>
-                <a href="#" class="flex items-center px-2 py-2 text-sm font-medium text-gray-700 rounded-md hover:bg-gray-100">Items</a>
-                <a href="#" class="flex items-center px-2 py-2 text-sm font-medium text-gray-700 rounded-md hover:bg-gray-100">Suppliers</a>
+                <a href="/products" class="flex items-center px-2 py-2 text-sm font-medium text-gray-700 rounded-md hover:bg-gray-100">Product & Services</a>
+                <a href="/add_contact" class="flex items-center px-2 py-2 text-sm font-medium text-gray-700 rounded-md hover:bg-gray-100">Contacts</a>
                 <a href="#" class="flex items-center px-2 py-2 text-sm font-medium text-gray-700 rounded-md hover:bg-gray-100">Stock Movements</a>
                 <a href="#" class="flex items-center px-2 py-2 text-sm font-medium text-gray-700 rounded-md hover:bg-gray-100">Reports</a>
             </nav>
@@ -29,11 +29,12 @@
         <main class="flex-1 flex flex-col">
             <header class="flex items-center justify-between h-16 px-6 bg-white border-b border-gray-200">
                 <h2 class="text-2xl font-semibold text-gray-900">Dashboard</h2>
-                <div>
+                <!-- <div>
                     <button class="px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-md hover:bg-indigo-700">+ Add New Item</button>
-                </div>
+                </div> -->
             </header>
             <div class="flex-1 p-6 overflow-y-auto">
+                {% block content %}
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                     <!-- Inventory Summary -->
                     <div class="bg-white p-6 rounded-lg shadow">
@@ -82,8 +83,17 @@
                         </div>
                     </div>
                 </div>
+                {% endblock %}
             </div>
         </main>
     </div>
+    <script>
+        document.getElementById('logout-btn').addEventListener('click', function(e) {
+            e.preventDefault();
+            localStorage.removeItem('accessToken');
+            localStorage.removeItem('refreshToken');
+            window.location.href = '/';
+        });
+    </script>
 </body>
 </html>
