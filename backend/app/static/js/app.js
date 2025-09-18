@@ -182,14 +182,66 @@ function renderItemsView() {
     getEl('add-item-btn').addEventListener('click', () => {
         showAddItemModal();
     });
+
+    getEl('add-category-btn').addEventListener('click', () => {
+        showAddCategoryModal();
+    });
+}
+
+function showAddCategoryModal() {
+    const formFields = [
+        { id: 'category-name', name: 'category-name', label: 'Category Name', required: true },
+    ];
+    const formActions = [
+        { id: 'cancel-category-btn', label: 'Cancel', class: 'btn-secondary' },
+        { id: 'save-category-btn', label: 'Save Category', class: 'btn-primary' },
+    ];
+    const formHtml = createForm(formFields, formActions);
+    showModal('Add New Category', formHtml);
+
+    getEl('cancel-category-btn').addEventListener('click', hideModal);
+    getEl('save-category-btn').addEventListener('click', async () => {
+        const categoryName = getEl('category-name').value;
+
+        const ADD_CATEGORY_MUTATION = `
+            mutation AddCategory($name: String!) {
+                addCategory(name: $name) {
+                    id
+                    name
+                }
+            }
+        `;
+
+        try {
+            const data = await fetchGraphQL(ADD_CATEGORY_MUTATION, { name: categoryName });
+            if (data.addCategory) {
+                hideModal();
+                // Optionally, refresh a category list or give feedback
+            } else {
+                // Handle error
+                console.error('Failed to add category');
+            }
+        } catch (error) {
+            console.error('Error adding category:', error);
+        }
+    });
 }
 
 function showAddItemModal() {
     const formFields = [
-        { id: 'itemCode', name: 'itemCode', label: 'Item Code', required: true },
-        { id: 'itemName', name: 'itemName', label: 'Item Name', required: true },
-        { id: 'category', name: 'category', label: 'Category' },
-        { id: 'unitPrice', name: 'unitPrice', label: 'Unit Price', type: 'number' },
+        { id: 'code', name: 'code', label: 'Item Code', required: true },
+        { id: 'name', name: 'name', label: 'Item Name', required: true },
+        { id: 'track_inventory', name: 'track_inventory', label: 'Track Inventory', type: 'checkbox' },
+        { id: 'purchase', name: 'purchase', label: 'Purchase', type: 'checkbox' },
+        { id: 'cost_price', name: 'cost_price', label: 'Cost Price', type: 'number' },
+        { id: 'purchase_account', name: 'purchase_account', label: 'Purchase Account' },
+        { id: 'purchase_tax_rate', name: 'purchase_tax_rate', label: 'Purchase Tax Rate' },
+        { id: 'purchase_description', name: 'purchase_description', label: 'Purchase Description', type: 'textarea' },
+        { id: 'sell', name: 'sell', label: 'Sell', type: 'checkbox' },
+        { id: 'sale_price', name: 'sale_price', label: 'Sale Price', type: 'number' },
+        { id: 'sales_account', name: 'sales_account', label: 'Sales Account' },
+        { id: 'sales_tax_rate', name: 'sales_tax_rate', label: 'Sales Tax Rate' },
+        { id: 'sales_description', name: 'sales_description', label: 'Sales Description', type: 'textarea' },
     ];
     const formActions = [
         { id: 'cancel-btn', label: 'Cancel', class: 'btn-secondary' },
@@ -199,9 +251,43 @@ function showAddItemModal() {
     showModal('Add New Item', formHtml);
 
     getEl('cancel-btn').addEventListener('click', hideModal);
-    getEl('save-item-btn').addEventListener('click', () => {
-        console.log('Saving item...');
-        // Logic to save item data will go here
-        hideModal();
+    getEl('save-item-btn').addEventListener('click', async () => {
+        const itemData = {
+            code: getEl('code').value,
+            name: getEl('name').value,
+            track_inventory: getEl('track_inventory').checked,
+            purchase: getEl('purchase').checked,
+            cost_price: parseFloat(getEl('cost_price').value),
+            purchase_account: getEl('purchase_account').value,
+            purchase_tax_rate: getEl('purchase_tax_rate').value,
+            purchase_description: getEl('purchase_description').value,
+            sell: getEl('sell').checked,
+            sale_price: parseFloat(getEl('sale_price').value),
+            sales_account: getEl('sales_account').value,
+            sales_tax_rate: getEl('sales_tax_rate').value,
+            sales_description: getEl('sales_description').value,
+        };
+
+        const ADD_ITEM_MUTATION = `
+            mutation AddItem($itemData: ItemCreate!) {
+                addItem(itemData: $itemData) {
+                    id
+                    code
+                }
+            }
+        `;
+
+        try {
+            const data = await fetchGraphQL(ADD_ITEM_MUTATION, { itemData });
+            if (data.addItem) {
+                hideModal();
+                renderItemsView(); // Refresh the items view
+            } else {
+                // Handle error
+                console.error('Failed to add item');
+            }
+        } catch (error) {
+            console.error('Error adding item:', error);
+        }
     });
 }

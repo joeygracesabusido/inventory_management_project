@@ -19,9 +19,8 @@
 ## Project Structure
 - `/backend`: FastAPI and Strawberry GraphQL code.
   - `backend/app/main.py`: FastAPI application entry point.
-  -`/views: Strawberry Graphql
+  -`/views`: Strawberry Graphql
   - `/backend/graphql/schema.py`: Strawberry GraphQL schema definitions.
-  - `models/`: Database models (e.g., SQLAlchemy).
 - `/frontend`: Frontend code.
   - `/frontend/index.html`: Main HTML file.
   - `/frontend/js/`: jQuery and vanilla JavaScript files.

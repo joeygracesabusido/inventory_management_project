@@ -1,4 +1,3 @@
-
 // DOM Element Selectors
 const getEl = (id) => document.getElementById(id);
 
@@ -69,12 +68,25 @@ function createTable(headers, rows) {
 
 // --- Form Generation ---
 function createForm(fields, actions) {
-    const fieldsHtml = fields.map(field => `
-        <div class="form-group">
-            <label for="${field.id}">${field.label}</label>
-            <input type="${field.type || 'text'}" id="${field.id}" name="${field.name}" value="${field.value || ''}" ${field.required ? 'required' : ''}>
-        </div>
-    `).join('');
+    const fieldsHtml = fields.map(field => {
+        let fieldHtml = '';
+        switch (field.type) {
+            case 'textarea':
+                fieldHtml = `<textarea id="${field.id}" name="${field.name}" ${field.required ? 'required' : ''}>${field.value || ''}</textarea>`;
+                break;
+            case 'checkbox':
+                fieldHtml = `<input type="checkbox" id="${field.id}" name="${field.name}" ${field.value ? 'checked' : ''}>`;
+                break;
+            default:
+                fieldHtml = `<input type="${field.type || 'text'}" id="${field.id}" name="${field.name}" value="${field.value || ''}" ${field.required ? 'required' : ''}>`;
+        }
+        return `
+            <div class="form-group">
+                <label for="${field.id}">${field.label}</label>
+                ${fieldHtml}
+            </div>
+        `;
+    }).join('');
 
     const actionsHtml = actions.map(action => `
         <button type="button" id="${action.id}" class="${action.class}">${action.label}</button>
@@ -113,3 +125,32 @@ function initializeUI() {
     });
     initializeAuthViews();
 }
+
+document.addEventListener('DOMContentLoaded', () => {
+    const addCategoryButton = document.getElementById('add-category-button');
+    const addCategoryModal = document.getElementById('add-category-modal');
+
+    if (addCategoryButton && addCategoryModal) {
+        addCategoryButton.addEventListener('click', () => {
+            addCategoryModal.classList.toggle('hidden');
+            addCategoryModal.setAttribute('aria-hidden', addCategoryModal.classList.contains('hidden'));
+        });
+
+        // Close modal when clicking on the close button inside the modal
+        const closeButtons = addCategoryModal.querySelectorAll('[data-modal-hide="add-category-modal"]');
+        closeButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                addCategoryModal.classList.add('hidden');
+                addCategoryModal.setAttribute('aria-hidden', 'true');
+            });
+        });
+
+        // Close modal when clicking outside the modal content
+        addCategoryModal.addEventListener('click', (event) => {
+            if (event.target === addCategoryModal) {
+                addCategoryModal.classList.add('hidden');
+                addCategoryModal.setAttribute('aria-hidden', 'true');
+            }
+        });
+    }
+});
