@@ -2,6 +2,11 @@
 
 {% block title %}New Item - Inventory Management{% endblock %}
 
+{% block head %}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    {{ super() }}
+{% endblock %}
+
 {% block content %}
 <div class="flex items-center justify-between mb-6">
     <h2 class="text-2xl font-semibold text-gray-900">New item</h2>
@@ -17,6 +22,13 @@
             <div>
                 <label for="name" class="block text-sm font-medium text-gray-700">Name</label>
                 <input type="text" name="name" id="name" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+            </div>
+            <div>
+                <label for="category" class="block text-sm font-medium text-gray-700">Category</label>
+                <div class="relative">
+                    <input type="text" name="category" id="category" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" autocomplete="off">
+                    <div id="category-suggestions" class="absolute z-10 w-full bg-white border border-gray-300 rounded-md mt-1 hidden"></div>
+                </div>
             </div>
         </div>
 
@@ -51,12 +63,15 @@
                     <label for="purchase_account" class="block text-sm font-medium text-gray-700">Purchase account</label>
                     <select id="purchase_account" name="purchase_account" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
                         <option>Select an account</option>
+                        <option value="Account Receivable">Account Receivable</option>
                     </select>
                 </div>
                 <div>
                     <label for="purchase_tax_rate" class="block text-sm font-medium text-gray-700">Tax rate</label>
                     <select id="purchase_tax_rate" name="purchase_tax_rate" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
                         <option>Select a tax rate</option>
+                        <option value= 0.12>Tax 12 %</option>
+                        
                     </select>
                 </div>
             </div>
@@ -85,12 +100,14 @@
                     <label for="sales_account" class="block text-sm font-medium text-gray-700">Sales account</label>
                     <select id="sales_account" name="sales_account" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
                         <option>Select an account</option>
+                        <option value="Sales">Sales</option>
                     </select>
                 </div>
                 <div>
                     <label for="sales_tax_rate" class="block text-sm font-medium text-gray-700">Tax rate</label>
                     <select id="sales_tax_rate" name="sales_tax_rate" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
                         <option>Select a tax rate</option>
+                        <option value= 0.12>Tax 12 %</option>
                     </select>
                 </div>
             </div>
@@ -108,4 +125,30 @@
         </div>
     </form>
 </div>
+
+<div id="add-category-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+    <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+        <div class="mt-3 text-center">
+            <h3 class="text-lg leading-6 font-medium text-gray-900" id="modal-title">Add New Category</h3>
+            <div class="mt-2 px-7 py-3">
+                <form id="add-category-form">
+                    <input id="category-name" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" type="text" placeholder="Category Name">
+                    <div class="items-center px-4 py-3">
+                        <button id="add-category-btn" type="submit" class="px-4 py-2 bg-indigo-500 text-white text-base font-medium rounded-md w-full shadow-sm hover:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-300">
+                            Add Category
+                        </button>
+                    </div>
+                </form>
+            </div>
+            <div class="items-center px-4 py-3">
+                <button id="cancel-category-btn" class="px-4 py-2 bg-gray-200 text-gray-800 text-base font-medium rounded-md w-full shadow-sm hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-300">
+                    Cancel
+                </button>
+            </div>
+        </div>
+    </div>
+</div>{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', path='/js/new_item.js') }}"></script>
 {% endblock %}
