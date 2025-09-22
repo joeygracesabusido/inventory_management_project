@@ -6,11 +6,26 @@ from app.crud.user import get_user_by_email, create_user
 from app.schemas.item import ItemType, ItemCreate
 from app.crud.item import create_item
 from app.views.category import Mutation as CategoryMutation
+from app.schemas.contact import ContactType, ContactCreateInput
+from app.crud.contact import create_contact
 
 
 
 @strawberry.type
 class Mutation(CategoryMutation):
+    @strawberry.mutation
+    async def add_contact(self, contact_data: ContactCreateInput) -> ContactType:
+        new_contact = await create_contact(contact_data)
+        return ContactType(
+            id=str(new_contact["_id"]),
+            contact_name=new_contact["contact_name"],
+            account_number=new_contact.get("account_number"),
+            first_name=new_contact.get("first_name"),
+            last_name=new_contact.get("last_name"),
+            email=new_contact.get("email"),
+            phone_number=new_contact.get("phone_number"),
+        )
+
     @strawberry.mutation
     async def login(self, email: str, password: str) -> AuthTokenResponse:
         user = await get_user_by_email(email)

@@ -6,6 +6,68 @@ document.addEventListener('DOMContentLoaded', () => {
     const addCategoryForm = document.getElementById('add-category-form');
     const categoryNameInput = document.getElementById('category-name');
     const cancelCategoryBtn = document.getElementById('cancel-category-btn');
+    const contactsInput = document.getElementById('contacts');
+    const contactsSuggestions = document.getElementById('contacts-suggestions');
+
+    const fetchContacts = async (query) => {
+        const GQL_QUERY = `
+            query GetContacts($name: String) {
+                contacts(name: $name) {
+                    id
+                    contactName
+                }
+            }
+        `;
+        try {
+            const response = await fetch('/graphql', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                },
+                body: JSON.stringify({
+                    query: GQL_QUERY,
+                    variables: { name: query }
+                })
+            });
+            const responseData = await response.json();
+            if (responseData.errors) {
+                console.error('Error fetching contacts:', responseData.errors);
+                return [];
+            }
+            return responseData.data?.contacts || [];
+        } catch (error) {
+            console.error('Network error:', error);
+            return [];
+        }
+    };
+
+    const showContactSuggestions = (contacts) => {
+        contactsSuggestions.innerHTML = '';
+        if (contacts.length > 0) {
+            contacts.forEach(contact => {
+                const suggestion = document.createElement('div');
+                suggestion.classList.add('p-2', 'cursor-pointer', 'hover:bg-gray-200');
+                suggestion.textContent = contact.contactName;
+                suggestion.addEventListener('click', () => {
+                    contactsInput.value = contact.contactName;
+                    contactsSuggestions.classList.add('hidden');
+                });
+                contactsSuggestions.appendChild(suggestion);
+            });
+        }
+        contactsSuggestions.classList.remove('hidden');
+    };
+
+    contactsInput.addEventListener('input', async () => {
+        const query = contactsInput.value.trim();
+        if (query.length > 0) {
+            const contacts = await fetchContacts(query);
+            showContactSuggestions(contacts);
+        } else {
+            contactsSuggestions.classList.add('hidden');
+        }
+    });
 
     const fetchCategories = async (query) => {
         const GQL_QUERY = `
@@ -82,6 +144,9 @@ document.addEventListener('DOMContentLoaded', () => {
     document.addEventListener('click', (e) => {
         if (!categoryInput.contains(e.target) && !categorySuggestions.contains(e.target)) {
             categorySuggestions.classList.add('hidden');
+        }
+        if (!contactsInput.contains(e.target) && !contactsSuggestions.contains(e.target)) {
+            contactsSuggestions.classList.add('hidden');
         }
     });
 
