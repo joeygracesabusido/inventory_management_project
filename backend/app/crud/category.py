@@ -15,6 +15,6 @@ async def create_category(category_data):
     existing_category = await db.categories.find_one({"name": {"$regex": f"^{re.escape(category_data.name)}$", "$options": "i"}})
     if existing_category:
         return None
-    result = await db.categories.insert_one({"name": category_data.name})
+    result = await db.categories.insert_one({"name": category_data.name, "userId": category_data.userId})
     new_category = await db.categories.find_one({"_id": result.inserted_id})
     return new_category

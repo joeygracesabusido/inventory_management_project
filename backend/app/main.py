@@ -14,17 +14,22 @@ from app.views.category import Mutation as InsertCategory
 from app.db.database import create_unique_indexes
 
 
+from app.views.item import Mutation as ItemMutation
+
+
 @strawberry.type
 class Query(Query) :
     pass
 
 @strawberry.type
-class Mutation(Mutation, InsertCategory):
+class Mutation(Mutation, InsertCategory, ItemMutation):
     pass
 
 schema = strawberry.Schema(query=Query, mutation=Mutation)
 
-graphql_app = GraphQLRouter(schema)
+from app.custom_graphql import CustomGraphQLRouter
+
+graphql_app = CustomGraphQLRouter(schema)
 
 app = FastAPI(
     title="Inventory Management System",
@@ -70,26 +75,9 @@ async def products(request: Request):
 async def new_item_form(request: Request):
     return templates.TemplateResponse("new_item.html", {"request": request})
 
-@app.post("/new_item")
-async def new_item(request: Request):
-    form = await request.form()
-    item_data = ItemCreate(
-        code=form.get("code"),
-        name=form.get("name"),
-        track_inventory=form.get("track_inventory") == "on",
-        purchase=form.get("purchase") == "on",
-        cost_price=float(form.get("cost_price")),
-        purchase_account=form.get("purchase_account"),
-        purchase_tax_rate=form.get("purchase_tax_rate"),
-        purchase_description=form.get("purchase_description"),
-        sell=form.get("sell") == "on",
-        sale_price=float(form.get("sale_price")),
-        sales_account=form.get("sales_account"),
-        sales_tax_rate=form.get("sales_tax_rate"),
-        sales_description=form.get("sales_description"),
-    )
-    await create_item(item_data)
-    return RedirectResponse(url="/products", status_code=303)
+
+
+
 
 @app.get("/")
 async def root(request: Request):

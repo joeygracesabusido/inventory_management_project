@@ -14,7 +14,12 @@ from app.crud.contact import create_contact
 @strawberry.type
 class Mutation(CategoryMutation):
     @strawberry.mutation
-    async def add_contact(self, contact_data: ContactCreateInput) -> ContactType:
+    async def add_contact(self, contact_data: ContactCreateInput, info: strawberry.Info) -> ContactType:
+        user = info.context.get("user")
+        if not user:
+            raise Exception("Not authenticated")
+
+        contact_data.userId = str(user["_id"])
         new_contact = await create_contact(contact_data)
         return ContactType(
             id=str(new_contact["_id"]),
@@ -24,6 +29,31 @@ class Mutation(CategoryMutation):
             last_name=new_contact.get("last_name"),
             email=new_contact.get("email"),
             phone_number=new_contact.get("phone_number"),
+        )
+
+    @strawberry.mutation
+    async def add_item(self, item_data: ItemCreate, info: strawberry.Info) -> ItemType:
+        user = info.context.get("user")
+        if not user:
+            raise Exception("Not authenticated")
+
+        item_data.userId = str(user["_id"])
+        new_item = await create_item(item_data)
+        return ItemType(
+            id=str(new_item["_id"]),
+            code=new_item["code"],
+            name=new_item.get("name"),
+            track_inventory=new_item["track_inventory"],
+            purchase=new_item["purchase"],
+            cost_price=new_item.get("cost_price"),
+            purchase_account=new_item.get("purchase_account"),
+            purchase_tax_rate=new_item.get("purchase_tax_rate"),
+            purchase_description=new_item.get("purchase_description"),
+            sell=new_item["sell"],
+            sale_price=new_item.get("sale_price"),
+            sales_account=new_item.get("sales_account"),
+            sales_tax_rate=new_item.get("sales_tax_rate"),
+            sales_description=new_item.get("sales_description"),
         )
 
     @strawberry.mutation
@@ -59,25 +89,7 @@ class Mutation(CategoryMutation):
             last_name=new_user["last_name"]
         )
 
-    @strawberry.mutation
-    async def add_item(self, item_data: ItemCreate) -> ItemType:
-        new_item = await create_item(item_data)
-        return ItemType(
-            id=new_item["_id"],
-            code=new_item["code"],
-            name=new_item["name"],
-            track_inventory=new_item["track_inventory"],
-            purchase=new_item["purchase"],
-            cost_price=new_item["cost_price"],
-            purchase_account=new_item["purchase_account"],
-            purchase_tax_rate=new_item["purchase_tax_rate"],
-            purchase_description=new_item["purchase_description"],
-            sell=new_item["sell"],
-            sale_price=new_item["sale_price"],
-            sales_account=new_item["sales_account"],
-            sales_tax_rate=new_item["sales_tax_rate"],
-            sales_description=new_item["sales_description"],
-        )
+
 
 
 

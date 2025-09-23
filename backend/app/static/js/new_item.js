@@ -9,28 +9,44 @@ document.addEventListener('DOMContentLoaded', () => {
     const contactsInput = document.getElementById('contacts');
     const contactsSuggestions = document.getElementById('contacts-suggestions');
 
+    const graphqlFetch = async (query, variables = {}) => {
+        const token = localStorage.getItem('accessToken');
+        const headers = {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+        };
+        if (token) {
+            headers['Authorization'] = `Bearer ${token}`;
+        }
+
+        const response = await fetch('/graphql', {
+            method: 'POST',
+            headers,
+            body: JSON.stringify({
+                query,
+                variables,
+            }),
+        });
+
+        if (!response.ok) {
+            const errorBody = await response.text();
+            throw new Error(`Network error: ${response.status} ${response.statusText} - ${errorBody}`);
+        }
+
+        return response.json();
+    };
+
     const fetchContacts = async (query) => {
         const GQL_QUERY = `
             query GetContacts($name: String) {
                 contacts(name: $name) {
                     id
-                    contactName
+                    contact_name
                 }
             }
         `;
         try {
-            const response = await fetch('/graphql', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json',
-                },
-                body: JSON.stringify({
-                    query: GQL_QUERY,
-                    variables: { name: query }
-                })
-            });
-            const responseData = await response.json();
+            const responseData = await graphqlFetch(GQL_QUERY, { name: query });
             if (responseData.errors) {
                 console.error('Error fetching contacts:', responseData.errors);
                 return [];
@@ -48,9 +64,9 @@ document.addEventListener('DOMContentLoaded', () => {
             contacts.forEach(contact => {
                 const suggestion = document.createElement('div');
                 suggestion.classList.add('p-2', 'cursor-pointer', 'hover:bg-gray-200');
-                suggestion.textContent = contact.contactName;
+                suggestion.textContent = contact.contact_name;
                 suggestion.addEventListener('click', () => {
-                    contactsInput.value = contact.contactName;
+                    contactsInput.value = contact.contact_name;
                     contactsSuggestions.classList.add('hidden');
                 });
                 contactsSuggestions.appendChild(suggestion);
@@ -79,18 +95,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         `;
         try {
-            const response = await fetch('/graphql', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json',
-                },
-                body: JSON.stringify({
-                    query: GQL_QUERY,
-                    variables: { name: query }
-                })
-            });
-            const responseData = await response.json();
+            const responseData = await graphqlFetch(GQL_QUERY, { name: query });
             console.log(responseData)
             if (responseData.errors) {
                 console.error('Error fetching categories:', responseData.errors);
@@ -168,18 +173,7 @@ document.addEventListener('DOMContentLoaded', () => {
         `;
 
         try {
-            const response = await fetch('/graphql', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json',
-                },
-                body: JSON.stringify({
-                    query: ADD_CATEGORY_MUTATION,
-                    variables: { name: categoryName }
-                })
-            });
-            const responseData = await response.json();
+            const responseData = await graphqlFetch(ADD_CATEGORY_MUTATION, { name: categoryName });
             
             if (responseData.errors) {
                 alert(`Error adding category: ${responseData.errors[0].message}`);
@@ -197,5 +191,65 @@ document.addEventListener('DOMContentLoaded', () => {
 
     cancelCategoryBtn.addEventListener('click', () => {
         addCategoryModal.classList.add('hidden');
+    });
+
+    const newItemForm = document.getElementById('new-item-form');
+    newItemForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const formData = new FormData(newItemForm);
+        const itemData = {
+            code: formData.get('code'),
+            name: formData.get('name'),
+            category: formData.get('category'),
+            costPrice: parseFloat(formData.get('cost_price')),
+            salePrice: parseFloat(formData.get('sale_price')),
+            purchaseAccount: formData.get('purchase_account'),
+            salesAccount: formData.get('sales_account'),
+            purchaseTaxRate: parseFloat(formData.get('purchase_tax_rate')),
+            salesTaxRate: parseFloat(formData.get('sales_tax_rate')),
+            purchaseDescription: formData.get('purchase_description'),
+            salesDescription: formData.get('sales_description'),
+            trackInventory: formData.get('track_inventory') === 'on',
+            purchase: formData.get('purchase') === 'on',
+            sell: formData.get('sell') === 'on',
+        };
+
+        const ADD_ITEM_MUTATION = `
+            mutation AddItem($itemData: ItemCreate!) {
+                addItem(itemData: $itemData) {
+                    id
+                }
+            }
+        `;
+
+        try {
+            const token = localStorage.getItem("token");
+            const response = await fetch('/graphql', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({
+                    query: ADD_ITEM_MUTATION,
+                    variables: { itemData: itemData }
+                })
+            });
+
+            const responseData = await response.json();
+
+            if (responseData.errors) {
+                alert(`Error adding item: ${responseData.errors[0].message}`);
+            } else if (responseData.data && responseData.data.addItem) {
+                window.location.href = '/products';
+            } else {
+                alert('An unexpected error occurred.');
+            }
+        } catch (error) {
+            console.error('Network error:', error);
+            alert('Failed to connect to the server. Please try again.');
+        }
     });
 });

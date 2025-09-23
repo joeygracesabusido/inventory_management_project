@@ -1,4 +1,3 @@
-
 const API_URL = 'http://127.0.0.1:8000/graphql';
 
 async function fetchGraphQL(query, variables = {}) {
@@ -14,7 +13,6 @@ async function fetchGraphQL(query, variables = {}) {
     });
 
     if (!response.ok) {
-        // Handle non-2xx responses
         const errorBody = await response.text();
         console.error('GraphQL request failed:', response.status, response.statusText, errorBody);
         throw new Error(`Network error: ${response.statusText}`);
@@ -23,13 +21,10 @@ async function fetchGraphQL(query, variables = {}) {
     const result = await response.json();
 
     if (result.errors) {
-        // Handle GraphQL-level errors
         console.error('GraphQL Errors:', result.errors);
-        // If it's an auth error, maybe redirect to login
         if (result.errors.some(e => e.extensions?.code === 'AUTH_ERROR')) {
-            // This is a custom check, depends on backend error format
             console.log('Authentication error detected, logging out.');
-            logout(); // Assumes a logout function exists
+            logout();
         }
         throw new Error(result.errors.map(e => e.message).join('\n'));
     }
@@ -37,10 +32,54 @@ async function fetchGraphQL(query, variables = {}) {
     return result.data;
 }
 
-// Example of a logout function that might be called on auth error
+async function login(email, password) {
+    const query = `
+        mutation Login($email: String!, $password: String!) {
+            login(email: $email, password: $password) {
+                access_token
+            }
+        }
+    `;
+    const variables = { email, password };
+
+    try {
+        const data = await fetchGraphQL(query, variables);
+        const token = data.login.access_token;
+
+        console.log("Received token:", token); 
+
+        if (token) {
+            localStorage.setItem('accessToken', token);
+            console.log('Login successful! Token stored in localStorage.');
+        } else {
+            console.error('Login failed: No token received.');
+        }
+    } catch (error) {
+        console.error('Error during login:', error);
+    }
+}
+
 function logout() {
     localStorage.removeItem('accessToken');
-    localStorage.removeItem('refreshToken');
-    // Show login view - assumes a function toggleViews exists
-    toggleViews('login-view'); 
+    console.log('Logged out and token removed from localStorage.');
+}
+
+async function addCategory(categoryName) {
+    const query = `
+        mutation AddCategory($name: String!) {
+            addCategory(name: $name) {
+                id
+                name
+                userId
+            }
+        }
+    `;
+    const variables = { name: categoryName };
+
+    try {
+        const data = await fetchGraphQL(query, variables);
+        console.log('Category added:', data.addCategory);
+    } catch (error) {
+        console.error('Error adding category:', error);
+    }
 }

@@ -25,19 +25,24 @@ document.addEventListener('DOMContentLoaded', () => {
             `;
 
             try {
+                const token = localStorage.getItem('accessToken');
                 const response = await fetch('/graphql', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                         'Accept': 'application/json',
-                        // Add authorization header if needed
-                        // 'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
+                        ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
                     },
                     body: JSON.stringify({
                         query: query,
                         variables: { name: categoryName }
                     })
                 });
+
+                if (!response.ok) {
+                    const errorBody = await response.text();
+                    throw new Error(`Network error: ${response.status} ${response.statusText} - ${errorBody}`);
+                }
 
                 const responseData = await response.json();
 

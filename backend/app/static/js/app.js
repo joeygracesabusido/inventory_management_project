@@ -58,24 +58,14 @@ async function handleLogin(e) {
     const loginErrorEl = getEl('login-error');
     loginErrorEl.textContent = '';
 
-    const LOGIN_MUTATION = `
-        mutation Login($email: String!, $password: String!) {
-            login(email: $email, password: $password) {
-                accessToken
-                tokenType
-            }
-        }
-    `;
-
     try {
-        const data = await fetchGraphQL(LOGIN_MUTATION, { email, password });
-        const token = data.login.accessToken;
+        await login(email, password);
+        const token = localStorage.getItem('accessToken');
 
         if (token) {
-            localStorage.setItem('accessToken', token);
             window.location.href = '/dashboard';
         } else {
-            loginErrorEl.textContent = 'Login failed: No token received.';
+            loginErrorEl.textContent = 'Login failed: Please check your credentials.';
         }
     } catch (error) {
         loginErrorEl.textContent = error.message || 'An error occurred during login.';

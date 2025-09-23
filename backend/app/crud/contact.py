@@ -16,6 +16,7 @@ async def create_contact(contact: ContactCreateInput):
         "last_name": contact.last_name,
         "email": contact.email,
         "phone_number": contact.phone_number,
+        "userId": contact.userId,
     }
     result = await db.contacts.insert_one(contact_dict)
     new_contact = await db.contacts.find_one({"_id": result.inserted_id})
