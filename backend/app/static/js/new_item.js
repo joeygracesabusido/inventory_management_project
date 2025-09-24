@@ -41,7 +41,7 @@ document.addEventListener('DOMContentLoaded', () => {
             query GetContacts($name: String) {
                 contacts(name: $name) {
                     id
-                    contact_name
+                    contactName
                 }
             }
         `;
@@ -91,6 +91,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 categories(name: $name) {
                     id
                     name
+                    user
                 }
             }
         `;

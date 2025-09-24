@@ -14,7 +14,8 @@ class Query:
     @strawberry.field
     async def categories(self, name: Optional[str] = None) -> List[CategoryType]:
         categories = await get_categories(name)
-        return [CategoryType(id=str(c["_id"]), name=c["name"]) for c in categories]
+        #print(categories)
+        return [CategoryType(id=str(c["_id"]), name=c["name"], user=c['user']) for c in categories]
 
     @strawberry.field
     async def contacts(self, name: Optional[str] = None) -> List[ContactType]:

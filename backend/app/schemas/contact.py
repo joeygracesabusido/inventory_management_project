@@ -10,7 +10,7 @@ class ContactCreateInput:
     last_name: Optional[str] = None
     email: Optional[str] = None
     phone_number: Optional[str] = None
-    userId: Optional[str] = None
+    user: Optional[str] = None
 
 class ContactBase(BaseModel):
     contact_name: str
@@ -32,4 +32,4 @@ class ContactType:
     last_name: Optional[str] = None
     email: Optional[str] = None
     phone_number: Optional[str] = None
-    userId: Optional[str] = None
+    user: Optional[str] = None

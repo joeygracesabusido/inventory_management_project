@@ -36,7 +36,7 @@ async function login(email, password) {
     const query = `
         mutation Login($email: String!, $password: String!) {
             login(email: $email, password: $password) {
-                access_token
+                accessToken
             }
         }
     `;
@@ -44,7 +44,7 @@ async function login(email, password) {
 
     try {
         const data = await fetchGraphQL(query, variables);
-        const token = data.login.access_token;
+        const token = data.login.accessToken;
 
         console.log("Received token:", token); 
 

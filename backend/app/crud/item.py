@@ -38,7 +38,7 @@ async def create_item(item: ItemCreate):
         "sales_account": item.salesAccount,
         "sales_tax_rate": item.salesTaxRate,
         "sales_description": item.salesDescription,
-        "user_id": item.userId,
+        "userId": item.userId,
     }
     result = await db.items.insert_one(item_dict)
     return {**item_dict, "_id": str(result.inserted_id)}

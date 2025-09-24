@@ -4,9 +4,9 @@ import strawberry
 class CategoryType:
     id: str
     name: str
-    userId: str
+    user: str
 
 @strawberry.input
 class CategoryCreate:
     name: str
-    userId: str
+    user: str

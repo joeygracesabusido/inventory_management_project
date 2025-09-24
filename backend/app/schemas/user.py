@@ -9,5 +9,5 @@ class UserType:
 
 @strawberry.type
 class AuthTokenResponse:
-    access_token: str
-    token_type: str
+    access_token: str = strawberry.field(name="accessToken")
+    token_type: str = strawberry.field(name="tokenType")
