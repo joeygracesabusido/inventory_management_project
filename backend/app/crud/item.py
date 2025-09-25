@@ -28,6 +28,7 @@ async def create_item(item: ItemCreate):
             "name": item.name,
             "category": item.category,
             "measurement": item.measurement,
+            "barcode": item.barcode,
             "supplier": item.supplier,
             "track_inventory": item.trackInventory,
             "purchase": item.purchase,
@@ -48,3 +49,11 @@ async def create_item(item: ItemCreate):
         return {**item_dict, "_id": str(result.inserted_id)}
     except:
         raise Exception(f"Item with Name '{item.name}' or Code'{item.code}'already exists")
+
+async def get_items():
+    db = await get_database()
+    items_cursor = db.items.find({})
+    items = []
+    async for item in items_cursor:
+        items.append(item)
+    return items

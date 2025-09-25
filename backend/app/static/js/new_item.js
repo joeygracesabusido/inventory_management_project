@@ -213,6 +213,7 @@ document.addEventListener('DOMContentLoaded', () => {
             name: formData.get('name'),
             category: formData.get('category'),
             measurement: formData.get('measurement'),
+            barcode: formData.get('barcode'),
             supplier: formData.get('contacts'),
             costPrice: parseFloat(formData.get('cost_price')),
             salePrice: parseFloat(formData.get('sale_price')),

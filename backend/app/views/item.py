@@ -10,6 +10,7 @@ class Mutation():
     @strawberry.mutation
     async def add_item(self, item_data: ItemCreate, info: Info) -> ItemType:
         user = get_user_from_info(info)
+        print(user)
         if not user:
             raise Exception("Not authenticated")
 
@@ -17,7 +18,7 @@ class Mutation():
         if user_id is None:
             raise Exception("Authenticated user has no id")
 
-        item_data.user = user_id
+        item_data.user = user['email']
         new_item = await create_item(item_data)
 
         return ItemType(
@@ -26,6 +27,7 @@ class Mutation():
             name=new_item.get("name"),
             category=new_item.get("category"),
             measurement=new_item.get("measurement"),
+            barcode=new_item.get("barcode"),
             supplier=new_item.get("supplier"),
             track_inventory=new_item["track_inventory"],
             purchase=new_item["purchase"],

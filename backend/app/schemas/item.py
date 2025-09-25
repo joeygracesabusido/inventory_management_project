@@ -10,6 +10,7 @@ class ItemType:
     name: Optional[str] = None
     category: Optional[str] = None
     measurement: Optional[str] = None
+    barcode: Optional[str] = None
     supplier: Optional[str] = None
     track_inventory: bool
     purchase: bool
@@ -33,6 +34,7 @@ class ItemCreate:
     name: Optional[str] = None
     category: Optional[str] = None
     measurement: Optional[str] = None
+    barcode: Optional[str] = None
     supplier: Optional[str] = None
     trackInventory: bool = False
     purchase: bool = False
