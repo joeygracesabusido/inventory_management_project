@@ -38,10 +38,12 @@ document.addEventListener('DOMContentLoaded', function() {
         };
 
         try {
+            const token = localStorage.getItem("accessToken");
             const response = await fetch('/graphql', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
                 },
                 body: JSON.stringify({
                     query: mutation,

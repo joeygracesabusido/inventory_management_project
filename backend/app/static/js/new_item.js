@@ -58,20 +58,29 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    const showContactSuggestions = (contacts) => {
+    const showContactSuggestions = (contacts, query) => {
         contactsSuggestions.innerHTML = '';
         if (contacts.length > 0) {
             contacts.forEach(contact => {
                 const suggestion = document.createElement('div');
                 suggestion.classList.add('p-2', 'cursor-pointer', 'hover:bg-gray-200');
-                suggestion.textContent = contact.contact_name;
+                suggestion.textContent = contact.contactName;
                 suggestion.addEventListener('click', () => {
-                    contactsInput.value = contact.contact_name;
+                    contactsInput.value = contact.contactName;
                     contactsSuggestions.classList.add('hidden');
                 });
                 contactsSuggestions.appendChild(suggestion);
             });
         }
+
+        const createOption = document.createElement('div');
+        createOption.classList.add('p-2', 'cursor-pointer', 'hover:bg-gray-200', 'text-indigo-600');
+        createOption.innerHTML = `<i class="fas fa-plus mr-2"></i> Create "${query}"`;
+        createOption.addEventListener('click', () => {
+            window.location.href = '/add_contact';
+        });
+        contactsSuggestions.appendChild(createOption);
+
         contactsSuggestions.classList.remove('hidden');
     };
 
@@ -79,7 +88,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const query = contactsInput.value.trim();
         if (query.length > 0) {
             const contacts = await fetchContacts(query);
-            showContactSuggestions(contacts);
+            showContactSuggestions(contacts, query);
         } else {
             contactsSuggestions.classList.add('hidden');
         }
@@ -203,6 +212,8 @@ document.addEventListener('DOMContentLoaded', () => {
             code: formData.get('code'),
             name: formData.get('name'),
             category: formData.get('category'),
+            measurement: formData.get('measurement'),
+            supplier: formData.get('contacts'),
             costPrice: parseFloat(formData.get('cost_price')),
             salePrice: parseFloat(formData.get('sale_price')),
             purchaseAccount: formData.get('purchase_account'),
@@ -225,7 +236,7 @@ document.addEventListener('DOMContentLoaded', () => {
         `;
 
         try {
-            const token = localStorage.getItem("token");
+            const token = localStorage.getItem("accessToken");
             const response = await fetch('/graphql', {
                 method: 'POST',
                 headers: {

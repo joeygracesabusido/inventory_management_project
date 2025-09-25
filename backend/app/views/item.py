@@ -17,13 +17,16 @@ class Mutation():
         if user_id is None:
             raise Exception("Authenticated user has no id")
 
-        item_data.userId = user_id
+        item_data.user = user_id
         new_item = await create_item(item_data)
 
         return ItemType(
             id=str(new_item["_id"]),
             code=new_item["code"],
-            name=new_item["name"],
+            name=new_item.get("name"),
+            category=new_item.get("category"),
+            measurement=new_item.get("measurement"),
+            supplier=new_item.get("supplier"),
             track_inventory=new_item["track_inventory"],
             purchase=new_item["purchase"],
             cost_price=new_item["cost_price"],
@@ -35,8 +38,8 @@ class Mutation():
             sales_account=new_item["sales_account"],
             sales_tax_rate=new_item["sales_tax_rate"],
             sales_description=new_item["sales_description"],
-            userId=new_item.get("userId"),
-            created=None,
-            updated=None,
+            user=user['email'],
+            created_at=new_item['created_at'],
+            updated_at=new_item['updated_at']
         )
     
