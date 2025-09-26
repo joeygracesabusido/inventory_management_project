@@ -1,8 +1,48 @@
 import strawberry
 from strawberry.types import Info
 from app.schemas.item import ItemType, ItemCreate
-from app.crud.item import create_item
+from app.crud.item import create_item, get_items
 from app.utils.context import extract_user_id, get_user_from_info
+from typing import List
+
+
+
+@strawberry.type
+class Query:
+    @strawberry.field
+    async def getItems(self, info:Info) -> List[ItemType]:
+        user = get_user_from_info(info)
+
+        if not user:
+            raise Exception("Not authenticated")
+
+        items = await get_items()
+        #print(categories)
+        return [ItemType(id=str(c["_id"]), 
+                         code=c.get("code", ""),
+                         name=c["name"], 
+                         category=c["category"],
+                         measurement=c["measurement"],
+                         barcode=c["barcode"],
+                         supplier=c["supplier"],
+                         track_inventory=c["track_inventory"],
+                         purchase=c["purchase"],
+                         cost_price=c["cost_price"],
+                         purchase_account=c["purchase_account"],
+                         purchase_tax_rate=c["purchase_tax_rate"],
+                         purchase_description=c["purchase_description"],
+                         sell=c["sell"],
+                         sale_price=c["sale_price"],
+                         sales_account=c["sales_account"],
+                         sales_tax_rate=c["sales_tax_rate"],
+                         sales_description=c["sales_description"],
+                         created_at=c["created_at"],
+                         updated_at=c["updated_at"],
+                         user=c['user']) 
+                         for c in items]
+    
+
+            
 
 @strawberry.type
 class Mutation():
@@ -27,7 +67,7 @@ class Mutation():
             name=new_item.get("name"),
             category=new_item.get("category"),
             measurement=new_item.get("measurement"),
-            barcode=new_item.get("barcode"),
+            barcode=new_item["barcode"],
             supplier=new_item.get("supplier"),
             track_inventory=new_item["track_inventory"],
             purchase=new_item["purchase"],

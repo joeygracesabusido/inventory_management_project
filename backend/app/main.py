@@ -11,6 +11,7 @@ from app.views.queries import Query
 from app.schemas.item import ItemCreate
 from app.crud.item import create_item
 from app.views.category import Mutation as InsertCategory
+from app.views.item import Query as getItems
 from app.db.database import create_unique_indexes
 
 
@@ -18,7 +19,7 @@ from app.views.item import Mutation as ItemMutation
 
 
 @strawberry.type
-class Query(Query) :
+class Query(Query, getItems) :
     pass
 
 @strawberry.type

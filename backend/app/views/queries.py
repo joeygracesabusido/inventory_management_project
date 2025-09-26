@@ -8,10 +8,6 @@ from app.crud.contact import get_contacts
 @strawberry.type
 class Query:
     @strawberry.field
-    def hello(self) -> str:
-        return "Hello, world!"
-
-    @strawberry.field
     async def categories(self, name: Optional[str] = None) -> List[CategoryType]:
         categories = await get_categories(name)
         #print(categories)
