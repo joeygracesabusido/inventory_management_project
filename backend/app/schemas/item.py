@@ -1,6 +1,6 @@
 
 import strawberry
-from typing import Optional
+from typing import Optional, List
 from datetime import datetime, timezone
 
 @strawberry.type
@@ -27,6 +27,10 @@ class ItemType:
     created_at: Optional[datetime] = None
     updated_at: Optional[datetime] = None
 
+@strawberry.type
+class ItemsResponse:
+    items: List[ItemType]
+    total_items: int
 
 @strawberry.input
 class ItemCreate:
@@ -49,4 +53,28 @@ class ItemCreate:
     salesDescription: Optional[str] = None
     user: Optional[str] = None
     created_at: datetime = strawberry.field(default_factory=lambda: datetime.now(timezone.utc))
+    updated_at: datetime = strawberry.field(default_factory=lambda: datetime.now(timezone.utc))
+
+
+strawberry.input
+class ItemUpdate:
+    code: str
+    name: Optional[str] = None
+    category: Optional[str] = None
+    measurement: Optional[str] = None
+    barcode: Optional[str] = None
+    supplier: Optional[str] = None
+    trackInventory: bool = False
+    purchase: bool = False
+    costPrice: Optional[float] = None
+    purchaseAccount: Optional[str] = None
+    purchaseTaxRate: Optional[float] = None
+    purchaseDescription: Optional[str] = None
+    sell: bool = False
+    salePrice: Optional[float] = None
+    salesAccount: Optional[str] = None
+    salesTaxRate: Optional[float] = None
+    salesDescription: Optional[str] = None
+    user: Optional[str] = None
+    
     updated_at: datetime = strawberry.field(default_factory=lambda: datetime.now(timezone.utc))

@@ -1,0 +1,179 @@
+{% extends "dashboard.html" %}
+
+{% block title %}Edit Item - Inventory Management{% endblock %}
+
+{% block head %}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    {{ super() }}
+{% endblock %}
+
+{% block content %}
+<div class="flex items-center justify-between mb-6">
+    <h2 class="text-2xl font-semibold text-gray-900">Edit item</h2>
+</div>
+
+<div class="bg-white shadow rounded-lg p-6">
+    <form id="edit-item-form">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+                <label for="code" class="block text-sm font-medium text-gray-700">Code (required)</label>
+                <input type="text" name="code" id="code" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+            </div>
+            <div>
+                <label for="name" class="block text-sm font-medium text-gray-700">Name</label>
+                <input type="text" name="name" id="name" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+            </div>
+            <div>
+                <label for="category" class="block text-sm font-medium text-gray-700">Category</label>
+                <div class="relative">
+                    <input type="text" name="category" id="category" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" autocomplete="off">
+                    <div id="category-suggestions" class="absolute z-10 w-full bg-white border border-gray-300 rounded-md mt-1 hidden"></div>
+                </div>
+            </div>
+
+            <div>
+                <label for="barcode" class="block text-sm font-medium text-gray-700">Barcode</label>
+                <input type="text" name="barcode" id="barcode" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+            </div>
+
+
+            <div>
+                <label for="measurement" class="block text-sm font-medium text-gray-700">Measurement</label>
+                <input type="text" name="measurement" id="measurement" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                
+               
+            </div>
+            
+
+            <div>
+                
+                <label for="contacts" class="block text-sm font-medium text-gray-700">Supplier</label>
+                <div class="relative">
+                    <input type="text" name="contacts" id="contacts" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" autocomplete="off">
+                    <div id="contacts-suggestions" class="absolute z-10 w-full bg-white border border-gray-300 rounded-md mt-1 hidden"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-6">
+            <div class="flex items-start">
+                <div class="flex items-center h-5">
+                    <input id="track_inventory" name="track_inventory" type="checkbox" class="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded">
+                </div>
+                <div class="ml-3 text-sm">
+                    <label for="track_inventory" class="font-medium text-gray-700">Track inventory item</label>
+                    <p class="text-gray-500">Track the quantity and value of stock on hand. This option is suitable for organisations with less than 4,000 products or services, who purchase items before they are sold, and who calculate the average cost of items. <a href="#" class="text-indigo-600">Learn more about tracked inventory</a></p>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-6 border-t border-gray-200 pt-6">
+            <div class="flex items-start">
+                <div class="flex items-center h-5">
+                    <input id="purchase" name="purchase" type="checkbox" class="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded" checked>
+                </div>
+                <div class="ml-3 text-sm">
+                    <label for="purchase" class="font-medium text-gray-700">Purchase</label>
+                    <p class="text-gray-500">Add item to bills, purchase orders, and other purchase transactions</p>
+                </div>
+            </div>
+            <div class="mt-4 grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div>
+                    <label for="cost_price" class="block text-sm font-medium text-gray-700">Cost price</label>
+                    <input type="text" name="cost_price" id="cost_price" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                </div>
+                <div>
+                    <label for="purchase_account" class="block text-sm font-medium text-gray-700">Purchase account</label>
+                    <select id="purchase_account" name="purchase_account" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
+                        <option>Select an account</option>
+                        <option value="Account Receivable">Account Receivable</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="purchase_tax_rate" class="block text-sm font-medium text-gray-700">Tax rate</label>
+                    <select id="purchase_tax_rate" name="purchase_tax_rate" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
+                        <option>Select a tax rate</option>
+                        <option value= 0.12>Tax 12 %</option>
+                        
+                    </select>
+                </div>
+            </div>
+            <div class="mt-4">
+                <label for="purchase_description" class="block text-sm font-medium text-gray-700">Description</label>
+                <textarea id="purchase_description" name="purchase_description" rows="3" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"></textarea>
+            </div>
+        </div>
+
+        <div class="mt-6 border-t border-gray-200 pt-6">
+            <div class="flex items-start">
+                <div class="flex items-center h-5">
+                    <input id="sell" name="sell" type="checkbox" class="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded" checked>
+                </div>
+                <div class="ml-3 text-sm">
+                    <label for="sell" class="font-medium text-gray-700">Sell</label>
+                    <p class="text-gray-500">Add item to invoices, quotes, and other sales transactions</p>
+                </div>
+            </div>
+            <div class="mt-4 grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div>
+                    <label for="sale_price" class="block text-sm font-medium text-gray-700">Sale price</label>
+                    <input type="text" name="sale_price" id="sale_price" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                </div>
+                <div>
+                    <label for="sales_account" class="block text-sm font-medium text-gray-700">Sales account</label>
+                    <select id="sales_account" name="sales_account" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
+                        <option>Select an account</option>
+                        <option value="Sales">Sales</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="sales_tax_rate" class="block text-sm font-medium text-gray-700">Tax rate</label>
+                    <select id="sales_tax_rate" name="sales_tax_rate" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
+                        <option>Select a tax rate</option>
+                        <option value= 0.12>Tax 12 %</option>
+                    </select>
+                </div>
+            </div>
+            <div class="mt-4">
+                <label for="sales_description" class="block text-sm font-medium text-gray-700">Description</label>
+                <textarea id="sales_description" name="sales_description" rows="3" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"></textarea>
+            </div>
+        </div>
+
+        <div class="mt-6 border-t border-gray-200 pt-6">
+            <div class="flex justify-end">
+                <button type="button" class="bg-white py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">Cancel</button>
+                <button type="submit" class="ml-3 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">Save</button>
+            </div>
+        </div>
+    </form>
+</div>
+
+<div id="add-category-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+    <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+        <div class="mt-3 text-center">
+            <h3 class="text-lg leading-6 font-medium text-gray-900" id="modal-title">Add New Category</h3>
+            <div class="mt-2 px-7 py-3">
+                <form id="add-category-form">
+                    <input id="category-name" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" type="text" placeholder="Category Name">
+                    <div class="items-center px-4 py-3">
+                        <button id="add-category-btn" type="submit" class="px-4 py-2 bg-indigo-500 text-white text-base font-medium rounded-md w-full shadow-sm hover:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-300">
+                            Add Category
+                        </button>
+                    </div>
+                </form>
+            </div>
+            <div class="items-center px-4 py-3">
+                <button id="cancel-category-btn" class="px-4 py-2 bg-gray-200 text-gray-800 text-base font-medium rounded-md w-full shadow-sm hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-300">
+                    Cancel
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', path='/js/edit_item.js') }}"></script>
+{% endblock %}

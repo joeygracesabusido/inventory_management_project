@@ -1,7 +1,8 @@
 
-from app.schemas.item import ItemCreate
+from app.schemas.item import ItemCreate, ItemUpdate
 from app.db.database import get_database
 from pymongo.collation import Collation
+from bson import ObjectId
 
 
 # Case-insensitive uniqueness (e.g., "ABC" == "abc")
@@ -50,10 +51,81 @@ async def create_item(item: ItemCreate):
     except:
         raise Exception(f"Item with Name '{item.name}' or Code'{item.code}'already exists")
 
-async def get_items():
+async def get_items(search_term: str = None, page: int = 1, page_size: int = 20):
     db = await get_database()
-    items_cursor = db.items.find({})
+    
+    query = {}
+    if search_term:
+        query = {
+            "$or": [
+                {"name": {"$regex": search_term, "$options": "i"}},
+                {"code": {"$regex": search_term, "$options": "i"}},
+                {"category": {"$regex": search_term, "$options": "i"}},
+            ]
+        }
+
+    total_items = await db.items.count_documents(query)
+    
+    items_cursor = db.items.find(query).skip((page - 1) * page_size).limit(page_size)
+    
     items = []
     async for item in items_cursor:
         items.append(item)
-    return items
+        
+    return {"items": items, "total_items": total_items}
+
+
+async def get_items_for_transact(search_term: str = None, limit: int = 20):
+    db = await get_database()
+    
+    query = {}
+    if search_term:
+        query = {
+            "$or": [
+                {"name": {"$regex": search_term, "$options": "i"}},
+               
+            ]
+        }
+
+    total_items = await db.items.count_documents(query).limit(limit)
+    
+    items_cursor = db.items.find(query).limit(limit)
+    
+    items = []
+    async for item in items_cursor:
+        items.append(item)
+        
+    return {"items": items}
+
+async def get_item(item_id: str):
+    db = await get_database()
+    item = await db.items.find_one({"_id": ObjectId(item_id)})
+    return item
+
+async def update_item(item_id: str, item_data: ItemUpdate):
+    db = await get_database()
+    
+    item_dict = {
+        "code": item_data.code,
+        "name": item_data.name,
+        "category": item_data.category,
+        "measurement": item_data.measurement,
+        "barcode": item_data.barcode,
+        "supplier": item_data.supplier,
+        "track_inventory": item_data.trackInventory,
+        "purchase": item_data.purchase,
+        "cost_price": item_data.costPrice,
+        "purchase_account": item_data.purchaseAccount,
+        "purchase_tax_rate": item_data.purchaseTaxRate,
+        "purchase_description": item_data.purchaseDescription,
+        "sell": item_data.sell,
+        "sale_price": item_data.salePrice,
+        "sales_account": item_data.salesAccount,
+        "sales_tax_rate": item_data.salesTaxRate,
+        "sales_description": item_data.salesDescription,
+        "updated_at": item_data.updated_at
+    }
+
+    await db.items.update_one({"_id": ObjectId(item_id)}, {"$set": item_dict})
+    
+    return {**item_dict, "_id": item_id}
