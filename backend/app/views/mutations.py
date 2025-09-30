@@ -12,7 +12,12 @@ from app.crud.contact import create_contact
 from app.utils.context import extract_user_id, get_user_from_info
 from app.views.category import Mutation as CategoryMutation
 from app.views.item import Mutation as ItemMutation
-
+from app.schemas.stock import StockType, StockCreate
+from app.crud.stock import create_stock
+from app.schemas.sales_order import SalesOrderType, SalesOrderCreate, SalesOrderItemCreate
+from app.crud.sales_order import create_sales_order
+from app.crud.fifo import consume_stock
+from app.models.sales_order import SalesOrder, SalesOrderItem
 
 
 class IsAuthenticated(strawberry.permission.BasePermission):
@@ -26,6 +31,58 @@ class IsAuthenticated(strawberry.permission.BasePermission):
 @strawberry.type
 class Mutation(CategoryMutation, ItemMutation):
         
+    @strawberry.mutation
+    async def add_stock(self, stock_data: StockCreate, info: Info) -> StockType:
+        user = get_user_from_info(info)
+        if not user:
+            raise Exception("Not authenticated")
+
+        new_stock = await create_stock(stock_data)
+        return StockType(
+            id=str(new_stock["_id"]),
+            item_id=new_stock["item_id"],
+            quantity=new_stock["quantity"],
+            purchase_price=new_stock["purchase_price"],
+            purchase_date=new_stock["purchase_date"]
+        )
+
+    @strawberry.mutation
+    async def create_sales_order(self, sales_order_data: SalesOrderCreate, info: Info) -> SalesOrderType:
+        user = get_user_from_info(info)
+        if not user:
+            raise Exception("Not authenticated")
+
+        items_with_cogs = []
+        for item_data in sales_order_data.items:
+            cogs = await consume_stock(item_data.item_id, item_data.quantity)
+            items_with_cogs.append(SalesOrderItem(
+                item_id=item_data.item_id,
+                quantity=item_data.quantity,
+                sale_price=item_data.sale_price,
+                cogs=cogs
+            ))
+
+        new_sales_order = SalesOrder(
+            customer_name=sales_order_data.customer_name,
+            invoice_date=sales_order_data.invoice_date,
+            items=items_with_cogs,
+            subtotal=sales_order_data.subtotal,
+            vat=sales_order_data.vat,
+            total=sales_order_data.total
+        )
+
+        created_order = await create_sales_order(new_sales_order)
+
+        return SalesOrderType(
+            id=str(created_order["_id"]),
+            customer_name=created_order["customer_name"],
+            invoice_date=created_order["invoice_date"],
+            items=[SalesOrderItemType(**item) for item in created_order["items"]],
+            subtotal=created_order["subtotal"],
+            vat=created_order["vat"],
+            total=created_order["total"],
+            created_at=created_order["created_at"]
+        )
         
     @strawberry.mutation
     async def add_contact(self, contact_data: ContactCreateInput, info: Info) -> ContactType:

@@ -75,7 +75,7 @@ async def get_items(search_term: str = None, page: int = 1, page_size: int = 20)
     return {"items": items, "total_items": total_items}
 
 
-async def get_items_for_transact(search_term: str = None, limit: int = 20):
+async def itemAutocomplete(search_term: str = None, limit: int = 20):
     db = await get_database()
     
     query = {}
@@ -87,15 +87,14 @@ async def get_items_for_transact(search_term: str = None, limit: int = 20):
             ]
         }
 
-    total_items = await db.items.count_documents(query).limit(limit)
-    
+    total_items = await db.items.count_documents(query)
     items_cursor = db.items.find(query).limit(limit)
     
     items = []
     async for item in items_cursor:
         items.append(item)
         
-    return {"items": items}
+    return {"items": items, "total_items": total_items}
 
 async def get_item(item_id: str):
     db = await get_database()

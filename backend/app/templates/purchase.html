@@ -1,0 +1,40 @@
+{% extends "dashboard.html" %}
+
+{% block title %}Record Purchase - Inventory Management{% endblock %}
+
+{% block content %}
+<div class="bg-white shadow rounded-lg p-6">
+    <h2 class="text-2xl font-semibold text-gray-900 mb-6">Record New Purchase</h2>
+
+    <form id="purchase-form">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="relative">
+                <label for="item_name" class="block text-sm font-medium text-gray-700">Item Name *</label>
+                <input type="text" id="item_name" name="item_name" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md" placeholder="Select an item...">
+                <div id="item-suggestions" class="absolute z-10 w-full bg-white border border-gray-300 rounded-md mt-1 hidden"></div>
+            </div>
+            <div>
+                <label for="purchase_date" class="block text-sm font-medium text-gray-700">Purchase Date *</label>
+                <input type="date" name="purchase_date" id="purchase_date" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+            </div>
+            <div>
+                <label for="quantity" class="block text-sm font-medium text-gray-700">Quantity *</label>
+                <input type="number" name="quantity" id="quantity" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+            </div>
+            <div>
+                <label for="purchase_price" class="block text-sm font-medium text-gray-700">Purchase Price *</label>
+                <input type="number" name="purchase_price" id="purchase_price" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+            </div>
+        </div>
+
+        <div class="mt-6 border-t border-gray-200 pt-6 flex justify-end">
+            <button type="button" class="bg-white py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">Cancel</button>
+            <button type="submit" class="ml-3 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">Save</button>
+        </div>
+    </form>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', path='/js/purchase.js') }}"></script>
+{% endblock %}

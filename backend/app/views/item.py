@@ -2,7 +2,7 @@
 import strawberry
 from strawberry.types import Info
 from app.schemas.item import ItemType, ItemCreate, ItemsResponse
-from app.crud.item import create_item, get_items, get_item, update_item
+from app.crud.item import create_item, get_items, get_item, update_item, itemAutocomplete
 from app.utils.context import extract_user_id, get_user_from_info
 from typing import List
 
@@ -49,6 +49,46 @@ class Query:
             total_items=total_items
         )
     
+    @strawberry.field
+    async def getItemsAutocomplete(self, info:Info, search: str = None) -> ItemsResponse:
+        user = get_user_from_info(info)
+
+        if not user:
+            raise Exception("Not authenticated")
+
+        result = await itemAutocomplete(search_term=search)
+        
+        items = result["items"]
+        total_items = result["total_items"]
+        
+        return ItemsResponse(
+            items=[ItemType(id=str(c["_id"]), 
+                         code=c.get("code", ""),
+                         name=c["name"], 
+                         category=c["category"],
+                         measurement=c["measurement"],
+                         barcode=c["barcode"],
+                         supplier=c["supplier"],
+                         track_inventory=c["track_inventory"],
+                         purchase=c["purchase"],
+                         cost_price=c["cost_price"],
+                         purchase_account=c["purchase_account"],
+                         purchase_tax_rate=c["purchase_tax_rate"],
+                         purchase_description=c["purchase_description"],
+                         sell=c["sell"],
+                         sale_price=c["sale_price"],
+                         sales_account=c["sales_account"],
+                         sales_tax_rate=c["sales_tax_rate"],
+                         sales_description=c["sales_description"],
+                         created_at=c["created_at"],
+                         updated_at=c["updated_at"],
+                         user=c['user']) 
+                         for c in items],
+            total_items=total_items
+        )
+
+
+
     @strawberry.field
     async def getItem(self, info:Info, itemId: str) -> ItemType:
         user = get_user_from_info(info)

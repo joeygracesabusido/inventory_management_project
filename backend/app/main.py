@@ -84,6 +84,10 @@ async def edit_item_form(request: Request, item_id: str):
 async def sales_order_form(request: Request):
     return templates.TemplateResponse("sales_order.html", {"request": request})
 
+@app.get("/purchase")
+async def purchase_form(request: Request):
+    return templates.TemplateResponse("purchase.html", {"request": request})
+
 
 
 @app.get("/")
