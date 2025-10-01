@@ -54,19 +54,64 @@ async def create_item(item: ItemCreate):
 async def get_items(search_term: str = None, page: int = 1, page_size: int = 20):
     db = await get_database()
     
-    query = {}
-    if search_term:
-        query = {
-            "$or": [
-                {"name": {"$regex": search_term, "$options": "i"}},
-                {"code": {"$regex": search_term, "$options": "i"}},
-                {"category": {"$regex": search_term, "$options": "i"}},
-            ]
-        }
+    pipeline = []
 
-    total_items = await db.items.count_documents(query)
-    
-    items_cursor = db.items.find(query).skip((page - 1) * page_size).limit(page_size)
+    # Match stage for searching
+    if search_term:
+        pipeline.append({
+            "$match": {
+                "$or": [
+                    {"name": {"$regex": search_term, "$options": "i"}},
+                    {"code": {"$regex": search_term, "$options": "i"}},
+                    {"category": {"$regex": search_term, "$options": "i"}},
+                ]
+            }
+        })
+
+    # Add a field to convert _id to string
+    pipeline.append({
+        "$addFields": {
+            "item_id_str": {"$toString": "$_id"}
+        }
+    })
+
+    # Lookup stage to join with stock
+    pipeline.extend([
+        {
+            "$lookup": {
+                "from": "stock",
+                "localField": "item_id_str",
+                "foreignField": "item_id",
+                "as": "stock_info"
+            }
+        },
+        {
+            "$unwind": {
+                "path": "$stock_info",
+                "preserveNullAndEmptyArrays": True
+            }
+        },
+        {
+            "$addFields": {
+                "quantity": "$stock_info.quantity",
+                "cost_price": "$stock_info.purchase_price"
+            }
+        }
+    ])
+
+    # Count total items
+    count_pipeline = pipeline.copy()
+    count_pipeline.append({"$count": "total_items"})
+    count_result = await db.items.aggregate(count_pipeline).to_list(length=1)
+    total_items = count_result[0]["total_items"] if count_result else 0
+
+    # Pagination stages
+    pipeline.extend([
+        {"$skip": (page - 1) * page_size},
+        {"$limit": page_size}
+    ])
+
+    items_cursor = db.items.aggregate(pipeline)
     
     items = []
     async for item in items_cursor:

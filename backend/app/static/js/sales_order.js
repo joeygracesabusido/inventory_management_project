@@ -5,6 +5,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const addNewLineBtn = document.getElementById('add-new-line-btn');
     const taxModeSelect = document.getElementById('tax-mode');
     const salesOrderForm = document.getElementById('sales-order-form');
+    const modal = document.getElementById('confirmation-modal');
+    const modalSummary = document.getElementById('modal-summary');
+    const confirmSaleBtn = document.getElementById('confirm-sale-btn');
+    const cancelSaleBtn = document.getElementById('cancel-sale-btn');
+    const loadingSpinner = document.getElementById('loading-spinner');
 
     const graphqlFetch = async (query, variables) => {
         const token = localStorage.getItem("accessToken");
@@ -93,6 +98,25 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
+    const fetchSellingPriceFromStock = async (itemId) => {
+        const GQL_QUERY = `
+            query GetItemSellingPriceFromStock($itemId: String!) {
+                getItemSellingPriceFromStock(itemId: $itemId)
+            }
+        `;
+        try {
+            const responseData = await graphqlFetch(GQL_QUERY, { itemId });
+            if (responseData.errors) {
+                console.error('Error fetching selling price from stock:', responseData.errors);
+                return null;
+            }
+            return responseData.data?.getItemSellingPriceFromStock;
+        } catch (error) {
+            console.error('Network error:', error);
+            return null;
+        }
+    };
+
     const showItemSuggestions = (suggestions, inputElement) => {
         const suggestionsContainer = inputElement.nextElementSibling;
         suggestionsContainer.innerHTML = '';
@@ -101,14 +125,18 @@ document.addEventListener('DOMContentLoaded', () => {
                 const suggestionElement = document.createElement('div');
                 suggestionElement.classList.add('p-2', 'cursor-pointer', 'hover:bg-gray-200');
                 suggestionElement.textContent = item.name;
-                suggestionElement.addEventListener('click', () => {
+                suggestionElement.addEventListener('click', async () => {
                     const row = inputElement.closest('tr');
                     row.dataset.itemId = item.id;
                     inputElement.value = item.name;
                     const priceInput = row.querySelector('.sale-price-input');
                     const taxInput = row.querySelector('.sale-tax-input');
+                    
+                    // Fetch selling price from stock
+                    const sellingPriceFromStock = await fetchSellingPriceFromStock(item.id);
+
                     if (priceInput) {
-                        priceInput.value = item.salePrice;
+                        priceInput.value = sellingPriceFromStock !== null ? sellingPriceFromStock : item.salePrice;
                     }
                     if (taxInput) {
                         taxInput.value = item.salesTaxRate;
@@ -234,37 +262,73 @@ document.addEventListener('DOMContentLoaded', () => {
             });
 
             const salesOrderData = {
-                customer_name: contactsInput.value,
-                invoice_date: document.getElementById('invoice_date').value,
+                customerName: contactsInput.value,
+                invoiceDate: document.getElementById('invoice_date').value,
                 items: items,
                 subtotal: parseFloat(document.querySelector('.sale-total-amount-input').value.replace(/,/g, '')),
                 vat: parseFloat(document.querySelector('.sale-vat-input').value.replace(/,/g, '')),
                 total: parseFloat(document.querySelector('.sale-amount-due-input').value.replace(/,/g, ''))
             };
 
-            const GQL_MUTATION = `
-                mutation CreateSalesOrder($salesOrderData: SalesOrderCreate!) {
-                    createSalesOrder(salesOrderData: $salesOrderData) {
-                        id
-                    }
-                }
+            modalSummary.innerHTML = `
+                <p><strong>Customer:</strong> ${salesOrderData.customerName}</p>
+                <p><strong>Total Amount:</strong> ${salesOrderData.total.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
             `;
-
-            try {
-                const responseData = await graphqlFetch(GQL_MUTATION, { salesOrderData });
-                if (responseData.errors) {
-                    console.error('Error creating sales order:', responseData.errors);
-                    alert('Error creating sales order. See console for details.');
-                } else {
-                    alert('Sales order created successfully!');
-                    window.location.reload();
-                }
-            } catch (error) {
-                console.error('Network error:', error);
-                alert('Network error. See console for details.');
-            }
+            modal.classList.remove('hidden');
         });
     }
+
+    confirmSaleBtn.addEventListener('click', async () => {
+        modal.classList.add('hidden');
+        loadingSpinner.classList.remove('hidden');
+
+        const items = [];
+        salesOrderTbody.querySelectorAll('tr').forEach(row => {
+            const itemId = row.dataset.itemId;
+            if (itemId) {
+                const quantity = parseFloat(row.querySelector('.sale-quantity-input').value) || 0;
+                const salePrice = parseFloat(row.querySelector('.sale-price-input').value) || 0;
+                items.push({ itemId, quantity, salePrice });
+            }
+        });
+
+        const salesOrderData = {
+            customerName: contactsInput.value,
+            invoiceDate: document.getElementById('invoice_date').value,
+            items: items,
+            subtotal: parseFloat(document.querySelector('.sale-total-amount-input').value.replace(/,/g, '')),
+            vat: parseFloat(document.querySelector('.sale-vat-input').value.replace(/,/g, '')),
+            total: parseFloat(document.querySelector('.sale-amount-due-input').value.replace(/,/g, ''))
+        };
+
+        const GQL_MUTATION = `
+            mutation CreateSalesOrder($salesOrderData: SalesOrderCreate!) {
+                createSalesOrder(salesOrderData: $salesOrderData) {
+                    id
+                }
+            }
+        `;
+
+        try {
+            const responseData = await graphqlFetch(GQL_MUTATION, { salesOrderData });
+            if (responseData.errors) {
+                console.error('Error creating sales order:', responseData.errors);
+                alert(`Error creating sales order: ${responseData.errors[0].message}`);
+            } else {
+                alert('Sales order created successfully!');
+                window.location.reload();
+            }
+        } catch (error) {
+            console.error('Network error:', error);
+            alert('Network error. See console for details.');
+        } finally {
+            loadingSpinner.classList.add('hidden');
+        }
+    });
+
+    cancelSaleBtn.addEventListener('click', () => {
+        modal.classList.add('hidden');
+    });
 
     contactsInput.addEventListener('input', async () => {
         const query = contactsInput.value.trim();

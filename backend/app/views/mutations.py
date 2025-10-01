@@ -14,10 +14,12 @@ from app.views.category import Mutation as CategoryMutation
 from app.views.item import Mutation as ItemMutation
 from app.schemas.stock import StockType, StockCreate
 from app.crud.stock import create_stock
-from app.schemas.sales_order import SalesOrderType, SalesOrderCreate, SalesOrderItemCreate
+from app.schemas.sales_order import SalesOrderType, SalesOrderCreate, SalesOrderItemCreate, SalesOrderItemType
 from app.crud.sales_order import create_sales_order
 from app.crud.fifo import consume_stock
 from app.models.sales_order import SalesOrder, SalesOrderItem
+from app.schemas.purchase import PurchaseCreate, PurchaseType, PurchaseItemType
+from app.crud.purchase import create_purchase
 
 
 class IsAuthenticated(strawberry.permission.BasePermission):
@@ -43,6 +45,7 @@ class Mutation(CategoryMutation, ItemMutation):
             item_id=new_stock["item_id"],
             quantity=new_stock["quantity"],
             purchase_price=new_stock["purchase_price"],
+            selling_price=new_stock["selling_price"],
             purchase_date=new_stock["purchase_date"]
         )
 
@@ -54,12 +57,20 @@ class Mutation(CategoryMutation, ItemMutation):
 
         items_with_cogs = []
         for item_data in sales_order_data.items:
-            cogs = await consume_stock(item_data.item_id, item_data.quantity)
+            consumed_items_details = await consume_stock(item_data.item_id, item_data.quantity)
+            total_cogs_for_item = sum(detail['cogs'] for detail in consumed_items_details)
+            
+            # Determine the selling price for the sales order item
+            # Use the selling_price from the first consumed stock item, or fallback to item_data.sale_price
+            effective_sale_price = item_data.sale_price
+            if consumed_items_details and consumed_items_details[0].get('selling_price') is not None:
+                effective_sale_price = consumed_items_details[0]['selling_price']
+
             items_with_cogs.append(SalesOrderItem(
                 item_id=item_data.item_id,
                 quantity=item_data.quantity,
-                sale_price=item_data.sale_price,
-                cogs=cogs
+                sale_price=effective_sale_price,
+                cogs=total_cogs_for_item
             ))
 
         new_sales_order = SalesOrder(
@@ -82,6 +93,25 @@ class Mutation(CategoryMutation, ItemMutation):
             vat=created_order["vat"],
             total=created_order["total"],
             created_at=created_order["created_at"]
+        )
+
+    @strawberry.mutation
+    async def create_purchase(self, purchase_data: PurchaseCreate, info: Info) -> PurchaseType:
+        user = get_user_from_info(info)
+        if not user:
+            raise Exception("Not authenticated")
+
+        new_purchase = await create_purchase(purchase_data)
+
+        return PurchaseType(
+            id=str(new_purchase["_id"]),
+            supplierName=new_purchase["supplier_name"],
+            purchaseDate=new_purchase["purchase_date"],
+            items=[PurchaseItemType(itemId=item["item_id"], quantity=item["quantity"], purchasePrice=item["purchase_price"], sellingPrice=item["selling_price"]) for item in new_purchase["items"]],
+            subtotal=new_purchase["subtotal"],
+            vat=new_purchase["vat"],
+            total=new_purchase["total"],
+            createdAt=new_purchase["created_at"]
         )
         
     @strawberry.mutation

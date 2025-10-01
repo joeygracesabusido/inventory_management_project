@@ -13,22 +13,43 @@
                 <input type="text" id="item_name" name="item_name" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md" placeholder="Select an item...">
                 <div id="item-suggestions" class="absolute z-10 w-full bg-white border border-gray-300 rounded-md mt-1 hidden"></div>
             </div>
+            <div class="relative">
+                <label for="supplier_name" class="block text-sm font-medium text-gray-700">Supplier Name *</label>
+                <input type="text" id="supplier_name" name="supplier_name" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                <div id="supplier-suggestions" class="absolute z-10 w-full bg-white border border-gray-300 rounded-md mt-1 hidden"></div>
+            </div>
             <div>
                 <label for="purchase_date" class="block text-sm font-medium text-gray-700">Purchase Date *</label>
                 <input type="date" name="purchase_date" id="purchase_date" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
             </div>
             <div>
                 <label for="quantity" class="block text-sm font-medium text-gray-700">Quantity *</label>
-                <input type="number" name="quantity" id="quantity" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                <input type="number" name="quantity" id="quantity" class.bind="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
             </div>
             <div>
                 <label for="purchase_price" class="block text-sm font-medium text-gray-700">Purchase Price *</label>
                 <input type="number" name="purchase_price" id="purchase_price" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
             </div>
+            <div>
+                <label for="suggested_selling_price" class="block text-sm font-medium text-gray-700">Suggested Selling Price</label>
+                <input type="number" name="suggested_selling_price" id="suggested_selling_price" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+            </div>
+            <div>
+                <label for="subtotal" class="block text-sm font-medium text-gray-700">Subtotal</label>
+                <input type="number" name="subtotal" id="subtotal" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" readonly>
+            </div>
+            <div>
+                <label for="vat" class="block text-sm font-medium text-gray-700">VAT (%)</label>
+                <input type="number" name="vat" id="vat" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+            </div>
+            <div>
+                <label for="total" class="block text-sm font-medium text-gray-700">Total</label>
+                <input type="number" name="total" id="total" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" readonly>
+            </div>
         </div>
 
         <div class="mt-6 border-t border-gray-200 pt-6 flex justify-end">
-            <button type="button" class="bg-white py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">Cancel</button>
+            <button id="cancel-purchase" type="button" class="bg-white py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">Cancel</button>
             <button type="submit" class="ml-3 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">Save</button>
         </div>
     </form>

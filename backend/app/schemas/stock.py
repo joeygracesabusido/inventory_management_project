@@ -8,6 +8,7 @@ class StockType:
     item_id: str
     quantity: int
     purchase_price: float
+    selling_price: Optional[float] = None
     purchase_date: datetime
 
 @strawberry.input
@@ -15,6 +16,7 @@ class StockCreate:
     item_id: str
     quantity: int
     purchase_price: float
+    selling_price: Optional[float] = None
     purchase_date: Optional[datetime] = None
 
 @strawberry.input

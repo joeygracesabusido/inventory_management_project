@@ -13,6 +13,7 @@ class ItemType:
     barcode: Optional[str] = None
     supplier: Optional[str] = None
     track_inventory: bool
+    quantity: Optional[int] = None
     purchase: bool
     cost_price: Optional[float] = None
     purchase_account: Optional[str] = None

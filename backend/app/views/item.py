@@ -24,27 +24,28 @@ class Query:
         
         #print(categories)
         return ItemsResponse(
-            items=[ItemType(id=str(c["_id"]), 
+            items=[ItemType(id=str(c["_id"]),
                          code=c.get("code", ""),
-                         name=c["name"], 
+                         name=c["name"],
                          category=c["category"],
                          measurement=c["measurement"],
                          barcode=c["barcode"],
                          supplier=c["supplier"],
                          track_inventory=c["track_inventory"],
                          purchase=c["purchase"],
-                         cost_price=c["cost_price"],
+                         cost_price=c.get("cost_price"),
                          purchase_account=c["purchase_account"],
                          purchase_tax_rate=c["purchase_tax_rate"],
                          purchase_description=c["purchase_description"],
                          sell=c["sell"],
-                         sale_price=c["sale_price"],
+                         sale_price=c.get("sale_price"),
                          sales_account=c["sales_account"],
                          sales_tax_rate=c["sales_tax_rate"],
                          sales_description=c["sales_description"],
                          created_at=c["created_at"],
                          updated_at=c["updated_at"],
-                         user=c['user']) 
+                         user=c['user'],
+                         quantity=c.get('quantity')) 
                          for c in items],
             total_items=total_items
         )
@@ -62,9 +63,9 @@ class Query:
         total_items = result["total_items"]
         
         return ItemsResponse(
-            items=[ItemType(id=str(c["_id"]), 
+            items=[ItemType(id=str(c["_id"]),
                          code=c.get("code", ""),
-                         name=c["name"], 
+                         name=c["name"],
                          category=c["category"],
                          measurement=c["measurement"],
                          barcode=c["barcode"],
@@ -98,9 +99,9 @@ class Query:
 
         item = await get_item(item_id=itemId)
         
-        return ItemType(id=str(item["_id"]), 
+        return ItemType(id=str(item["_id"]),
                          code=item.get("code", ""),
-                         name=item["name"], 
+                         name=item["name"],
                          category=item["category"],
                          measurement=item["measurement"],
                          barcode=item["barcode"],
@@ -110,7 +111,7 @@ class Query:
                          cost_price=item["cost_price"],
                          purchase_account=item["purchase_account"],
                          purchase_tax_rate=item["purchase_tax_rate"],
-                         purchase_description=item["purchase_description"],
+                         purchase_description=c["purchase_description"],
                          sell=item["sell"],
                          sale_price=item["sale_price"],
                          sales_account=item["sales_account"],

@@ -81,7 +81,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             category
                             costPrice
                             salePrice
-                            trackInventory
+                            quantity
                             measurement
                         }
                         totalItems
@@ -128,7 +128,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${item.category}</td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${item.costPrice || ''}</td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${item.salePrice || ''}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${item.trackInventory ? 'Yes' : 'No'}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${item.quantity || ''}</td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${item.measurement || ''}</td>
                             <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                 <a href="/edit_item/${item.id}" class="text-indigo-600 hover:text-indigo-900">...</a>

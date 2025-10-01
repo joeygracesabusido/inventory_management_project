@@ -88,6 +88,9 @@ async def sales_order_form(request: Request):
 async def purchase_form(request: Request):
     return templates.TemplateResponse("purchase.html", {"request": request})
 
+@app.get("/inventory_valuation")
+async def inventory_valuation_report_page(request: Request):
+    return templates.TemplateResponse("inventory_valuation.html", {"request": request})
 
 
 @app.get("/")
