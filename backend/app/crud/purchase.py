@@ -40,3 +40,6 @@ async def create_purchase(purchase: PurchaseCreate):
 
 async def get_purchase(purchase_id: str):
     return await purchase_collection.find_one({"_id": purchase_id})
+
+async def get_all_purchases():
+    return await purchase_collection.find().to_list(length=None)

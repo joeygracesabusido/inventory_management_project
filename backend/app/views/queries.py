@@ -8,6 +8,8 @@ from app.crud.contact import get_contacts
 from app.crud.sales_order import get_cogs_report
 from app.crud.stock import get_inventory_valuation_report, get_oldest_stock_selling_price
 from app.schemas.inventory_report import InventoryReportItemType
+from app.schemas.cogs import CogsReportItem
+from app.crud.cogs import calculate_cogs_per_item
 
 @strawberry.type
 class Query:
@@ -26,6 +28,11 @@ class Query:
     async def cogsReport(self, startDate: Optional[datetime] = None, endDate: Optional[datetime] = None) -> float:
         total_cogs = await get_cogs_report(start_date=startDate, end_date=endDate)
         return total_cogs
+
+    @strawberry.field
+    async def cogs_per_item_report(self) -> List[CogsReportItem]:
+        cogs_data = await calculate_cogs_per_item()
+        return [CogsReportItem(**item) for item in cogs_data]
 
     @strawberry.field
     async def inventoryValuationReport(self, item_id: Optional[str] = None, startDate: Optional[datetime] = None, endDate: Optional[datetime] = None) -> List[InventoryReportItemType]:

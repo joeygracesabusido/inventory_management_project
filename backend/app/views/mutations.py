@@ -13,7 +13,7 @@ from app.utils.context import extract_user_id, get_user_from_info
 from app.views.category import Mutation as CategoryMutation
 from app.views.item import Mutation as ItemMutation
 from app.schemas.stock import StockType, StockCreate
-from app.crud.stock import create_stock
+from app.crud.stock import create_stock, get_latest_stock_selling_price
 from app.schemas.sales_order import SalesOrderType, SalesOrderCreate, SalesOrderItemCreate, SalesOrderItemType
 from app.crud.sales_order import create_sales_order
 from app.crud.fifo import consume_stock
@@ -60,11 +60,9 @@ class Mutation(CategoryMutation, ItemMutation):
             consumed_items_details = await consume_stock(item_data.item_id, item_data.quantity)
             total_cogs_for_item = sum(detail['cogs'] for detail in consumed_items_details)
             
-            # Determine the selling price for the sales order item
-            # Use the selling_price from the first consumed stock item, or fallback to item_data.sale_price
-            effective_sale_price = item_data.sale_price
-            if consumed_items_details and consumed_items_details[0].get('selling_price') is not None:
-                effective_sale_price = consumed_items_details[0]['selling_price']
+            effective_sale_price = await get_latest_stock_selling_price(item_data.item_id)
+            if effective_sale_price is None:
+                effective_sale_price = item_data.sale_price # fallback
 
             items_with_cogs.append(SalesOrderItem(
                 item_id=item_data.item_id,

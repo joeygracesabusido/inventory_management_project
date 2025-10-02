@@ -28,6 +28,12 @@ async def get_oldest_stock_selling_price(item_id: str) -> Optional[float]:
         return oldest_stock["selling_price"]
     return None
 
+async def get_latest_stock_selling_price(item_id: str) -> Optional[float]:
+    latest_stock = await stock_collection.find_one({"item_id": item_id}, sort=[("purchase_date", -1)])
+    if latest_stock and "selling_price" in latest_stock:
+        return latest_stock["selling_price"]
+    return None
+
 async def update_stock_quantity(stock_id: str, new_quantity: int):
     await stock_collection.update_one({"_id": ObjectId(stock_id)}, {"$set": {"quantity": new_quantity}})
 

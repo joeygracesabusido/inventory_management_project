@@ -9,6 +9,9 @@ async def create_sales_order(sales_order: SalesOrder):
     result = await sales_order_collection.insert_one(sales_order_data)
     return {**sales_order_data, "_id": result.inserted_id}
 
+async def get_all_sales_orders():
+    return await sales_order_collection.find().to_list(length=None)
+
 async def get_cogs_report(start_date: datetime = None, end_date: datetime = None) -> float:
     query = {}
     if start_date and end_date:

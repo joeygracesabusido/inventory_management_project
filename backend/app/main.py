@@ -93,6 +93,11 @@ async def inventory_valuation_report_page(request: Request):
     return templates.TemplateResponse("inventory_valuation.html", {"request": request})
 
 
+@app.get("/cogs_report")
+async def cogs_report_page(request: Request):
+    return templates.TemplateResponse("cogs_report.html", {"request": request})
+
+
 @app.get("/")
 async def root(request: Request):
     return templates.TemplateResponse("index.html", {"request": request})

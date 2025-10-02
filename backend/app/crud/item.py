@@ -80,21 +80,26 @@ async def get_items(search_term: str = None, page: int = 1, page_size: int = 20)
         {
             "$lookup": {
                 "from": "stock",
-                "localField": "item_id_str",
-                "foreignField": "item_id",
-                "as": "stock_info"
+                "let": { "item_id_str": { "$toString": "$_id" } },
+                "pipeline": [
+                    { "$match": { "$expr": { "$eq": [ "$item_id", "$$item_id_str" ] } } },
+                    { "$sort": { "purchase_date": -1 } },
+                    { "$limit": 1 }
+                ],
+                "as": "latest_stock"
             }
         },
         {
             "$unwind": {
-                "path": "$stock_info",
+                "path": "$latest_stock",
                 "preserveNullAndEmptyArrays": True
             }
         },
         {
             "$addFields": {
-                "quantity": "$stock_info.quantity",
-                "cost_price": "$stock_info.purchase_price"
+                "quantity": "$latest_stock.quantity",
+                "cost_price": "$latest_stock.purchase_price",
+                "sale_price": "$latest_stock.selling_price"
             }
         }
     ])
