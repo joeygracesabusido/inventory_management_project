@@ -72,7 +72,7 @@ class Query:
                          supplier=c["supplier"],
                          track_inventory=c["track_inventory"],
                          purchase=c["purchase"],
-                         cost_price=c["cost_price"],
+                         purchasePrice=c.get("purchasePrice"),
                          purchase_account=c["purchase_account"],
                          purchase_tax_rate=c["purchase_tax_rate"],
                          purchase_description=c["purchase_description"],

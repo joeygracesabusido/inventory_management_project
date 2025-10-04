@@ -16,6 +16,7 @@ class ItemType:
     quantity: Optional[int] = None
     purchase: bool
     cost_price: Optional[float] = None
+    purchasePrice: Optional[float] = None
     purchase_account: Optional[str] = None
     purchase_tax_rate: Optional[float] = None
     purchase_description: Optional[str] = None

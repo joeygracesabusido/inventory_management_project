@@ -93,24 +93,26 @@ class Mutation(CategoryMutation, ItemMutation):
             created_at=created_order["created_at"]
         )
 
-    @strawberry.mutation
-    async def create_purchase(self, purchase_data: PurchaseCreate, info: Info) -> PurchaseType:
-        user = get_user_from_info(info)
-        if not user:
-            raise Exception("Not authenticated")
+    # @strawberry.mutation
+    # async def create_purchase(self, purchase_data: PurchaseCreate, info: Info) -> PurchaseType:
+    #     user = get_user_from_info(info)
+    #     if not user:
+    #         raise Exception("Not authenticated")
 
-        new_purchase = await create_purchase(purchase_data)
+    #     new_purchase = await create_purchase(purchase_data)
 
-        return PurchaseType(
-            id=str(new_purchase["_id"]),
-            supplierName=new_purchase["supplier_name"],
-            purchaseDate=new_purchase["purchase_date"],
-            items=[PurchaseItemType(itemId=item["item_id"], quantity=item["quantity"], purchasePrice=item["purchase_price"], sellingPrice=item["selling_price"]) for item in new_purchase["items"]],
-            subtotal=new_purchase["subtotal"],
-            vat=new_purchase["vat"],
-            total=new_purchase["total"],
-            createdAt=new_purchase["created_at"]
-        )
+    #     return PurchaseType(
+    #         id=str(new_purchase["_id"]),
+    #         supplierName=new_purchase["supplier_name"],
+    #         purchaseDate=new_purchase["purchase_date"],
+    #         items=[PurchaseItemType(itemId=item["item_id"], 
+    #                                 quantity=item["quantity"], purchasePrice=item["purchase_price"], 
+    #                                 sellingPrice=item["selling_price"]) for item in new_purchase["items"]],
+    #         subtotal=new_purchase["subtotal"],
+    #         vat=new_purchase["vat"],
+    #         total=new_purchase["total"],
+    #         createdAt=new_purchase["created_at"]
+    #     )
         
     @strawberry.mutation
     async def add_contact(self, contact_data: ContactCreateInput, info: Info) -> ContactType:

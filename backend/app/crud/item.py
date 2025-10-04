@@ -128,17 +128,62 @@ async def get_items(search_term: str = None, page: int = 1, page_size: int = 20)
 async def itemAutocomplete(search_term: str = None, limit: int = 20):
     db = await get_database()
     
-    query = {}
-    if search_term:
-        query = {
-            "$or": [
-                {"name": {"$regex": search_term, "$options": "i"}},
-               
-            ]
-        }
+    pipeline = []
 
-    total_items = await db.items.count_documents(query)
-    items_cursor = db.items.find(query).limit(limit)
+    # Match stage for searching
+    if search_term:
+        pipeline.append({
+            "$match": {
+                "$or": [
+                    {"name": {"$regex": search_term, "$options": "i"}},
+                ]
+            }
+        })
+
+    # Add a field to convert _id to string
+    pipeline.append({
+        "$addFields": {
+            "item_id_str": {"$toString": "$_id"}
+        }
+    })
+
+    # Lookup stage to join with stock
+    pipeline.extend([
+        {
+            "$lookup": {
+                "from": "stock",
+                "let": { "item_id_str": { "$toString": "$_id" } },
+                "pipeline": [
+                    { "$match": { "$expr": { "$eq": [ "$item_id", "$$item_id_str" ] } } },
+                    { "$sort": { "purchase_date": -1 } },
+                    { "$limit": 1 }
+                ],
+                "as": "latest_stock"
+            }
+        },
+        {
+            "$unwind": {
+                "path": "$latest_stock",
+                "preserveNullAndEmptyArrays": True
+            }
+        },
+        {
+            "$addFields": {
+                "purchasePrice": "$latest_stock.purchase_price",
+            }
+        }
+    ])
+
+    # Count total items
+    count_pipeline = pipeline.copy()
+    count_pipeline.append({"$count": "total_items"})
+    count_result = await db.items.aggregate(count_pipeline).to_list(length=1)
+    total_items = count_result[0]["total_items"] if count_result else 0
+
+    # Limit stage
+    pipeline.append({"$limit": limit})
+
+    items_cursor = db.items.aggregate(pipeline)
     
     items = []
     async for item in items_cursor:

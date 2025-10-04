@@ -6,16 +6,16 @@ from datetime import datetime
 
 purchase_collection = db.purchases
 
-async def create_purchase(purchase: PurchaseCreate):
+async def create_purchase(purchase: PurchaseCreate, user: dict):
     purchase_data = {
-        "supplier_name": purchase.supplierName,
-        "purchase_date": purchase.purchaseDate,
+        "supplierName": purchase.supplierName,
+        "purchaseDate": purchase.purchaseDate,
         "items": [
             {
                 "item_id": item.itemId,
                 "quantity": item.quantity,
-                "purchase_price": item.purchasePrice,
-                "selling_price": item.sellingPrice,
+                "purchasePrice": item.purchasePrice,
+                "sellingPrice": item.sellingPrice,
             }
             for item in purchase.items
         ],
@@ -23,6 +23,8 @@ async def create_purchase(purchase: PurchaseCreate):
         "vat": purchase.vat,
         "total": purchase.total,
         "created_at": datetime.utcnow(),
+        "updated_at": datetime.utcnow(),
+        "user_id": user["email"],
     }
     result = await purchase_collection.insert_one(purchase_data)
 

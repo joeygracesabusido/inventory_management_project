@@ -16,6 +16,7 @@ from app.db.database import create_unique_indexes
 
 
 from app.views.item import Mutation as ItemMutation
+from app.views.purchase import Mutation as PurchaseMutation
 
 
 @strawberry.type
@@ -23,7 +24,7 @@ class Query(Query, getItems) :
     pass
 
 @strawberry.type
-class Mutation(Mutation, InsertCategory, ItemMutation):
+class Mutation(Mutation, InsertCategory, ItemMutation, PurchaseMutation):
     pass
 
 schema = strawberry.Schema(query=Query, mutation=Mutation)
